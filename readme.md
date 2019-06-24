@@ -1,8 +1,6 @@
-[![Travis Build Status](https://travis-ci.org/balmbees/dynamo-types.svg?branch=master)](https://travis-ci.org/breath103/dynamo-types)
-[![npm version](https://badge.fury.io/js/dynamo-types.svg)](https://badge.fury.io/js/dynamo-types)
-
-# DynamoTypes
-Typescript ORM of DynamoDB, written from scratch to fully support DynamoDB. Powering [Vingle](https://www.vingle.net)
+# Dynamorm
+Typescript ORM of DynamoDB, written from scratch to fully support DynamoDB.
+This is hard fork of https://github.com/balmbees/dynamo-types, for active maintenance reason
 
 ## Features
 1. Serialize / Deserialize DynamoDB record -> TS class object based on annotations.
@@ -24,9 +22,9 @@ Typescript ORM of DynamoDB, written from scratch to fully support DynamoDB. Powe
    - You can specify this by setting the connection of table. 
 7. Optimized aws-sdk usage
    - aws-sdk has a serious problem of not reusing HTTP connection towards DynamoDB by default. check [this issue](https://github.com/aws/aws-sdk-js/issues/900)
-   - this could cause unbearable latency sometimes with showing > 100ms. it's more of an issue of NodeJS HTTP module but nevertheless, it has been optimized here by keep-alive [Code](https://github.com/balmbees/dynamo-types/blob/master/src/connections/dynamodb_connection.ts#L37)
+   - this could cause unbearable latency sometimes with showing > 100ms. it's more of an issue of NodeJS HTTP module but nevertheless, it has been optimized here by keep-alive [Code](https://github.com/serverless-seoul/dynamorm/blob/master/src/connections/dynamodb_connection.ts#L37)
 8. AWS X-Ray support
-   - XRay is serverless distributed tracing service. In order to log DynamoDB transaction into it, you also need to some sort of risk monkey-patching. Here you can turn it on by setting [`process.env.ENABLE_XRAY = "true"`](https://github.com/balmbees/dynamo-types/blob/e0391c1c171638d06f9262446d8cbcb14a573cc8/src/config.ts#L9)
+   - XRay is serverless distributed tracing service. In order to log DynamoDB transaction into it, you also need to some sort of risk monkey-patching. Here you can turn it on by setting [`process.env.ENABLE_XRAY = "true"`](https://github.com/serverless-seoul/dynamorm/blob/e0391c1c171638d06f9262446d8cbcb14a573cc8/src/config.ts#L9)
 9. Testing
    - You can change the endpoint of DynamoDB by setting the environment variable or setting new connection, So you can install [local-dynamo](https://www.npmjs.com/package/local-dynamo) locally at setup endpoint to local. refer package.json for the detailed how-to
 
@@ -142,7 +140,7 @@ export class CardStat extends Table {
 ```
 
 ### TS Compiler Setting
-DynamoTypes utilize [reflect-metadata](https://github.com/rbuckton/reflect-metadata) to read metadata (usually type of variables) from Typescript code. to do so, you must enable those options.
+Dynamorm utilize [reflect-metadata](https://github.com/rbuckton/reflect-metadata) to read metadata (usually type of variables) from Typescript code. to do so, you must enable those options.
 
 ```json
 {
@@ -181,4 +179,4 @@ class Card extends Table {
 
 Then any query that is sent to the Card table will be sent through DAXConnection.
 
-If you don't specify any connection, it automatically uses [default connection](https://github.com/balmbees/dynamo-types/blob/e0391c1c171638d06f9262446d8cbcb14a573cc8/src/config.ts#L5), which is [DynamoDBConnection](https://github.com/balmbees/dynamo-types/blob/e0391c1c171638d06f9262446d8cbcb14a573cc8/src/connections/dynamodb_connection.ts).
+If you don't specify any connection, it automatically uses [default connection](https://github.com/serverless-seoul/dynamorm/blob/e0391c1c171638d06f9262446d8cbcb14a573cc8/src/config.ts#L5), which is [DynamoDBConnection](https://github.com/serverless-seoul/dynamorm/blob/e0391c1c171638d06f9262446d8cbcb14a573cc8/src/connections/dynamodb_connection.ts).

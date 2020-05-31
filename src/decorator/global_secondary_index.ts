@@ -1,13 +1,13 @@
 import * as Metadata from '../metadata';
-import { Table, ITable } from '../table';
+import { ITable, Table } from '../table';
 
-export function FullGlobalSecondaryIndex(hashKeyName: string, rangeKeyName: string, options: { name?: string; } = {}) {
+export function FullGlobalSecondaryIndex(hashKeyName: string, rangeKeyName: string, options: { name?: string } = {}) {
   return (tableClass: ITable<any>, propertyName: string) => {
-    const hash = tableClass.metadata.attributes.find(attr => attr.name === hashKeyName);
+    const hash = tableClass.metadata.attributes.find((attr) => attr.name === hashKeyName);
     if (!hash)
       throw new Error(`Given hashKey ${hashKeyName} is not declared as attribute`);
 
-    const range = tableClass.metadata.attributes.find(attr => attr.name === rangeKeyName);
+    const range = tableClass.metadata.attributes.find((attr) => attr.name === rangeKeyName);
     if (!range)
       throw new Error(`Given hashKey ${rangeKeyName} is not declared as attribute`);
 
@@ -18,12 +18,12 @@ export function FullGlobalSecondaryIndex(hashKeyName: string, rangeKeyName: stri
       hash,
       range,
     });
-  }
+  };
 }
 
-export function HashGlobalSecondaryIndex(hashKeyName: string, options: { name?: string; } = {}) {
+export function HashGlobalSecondaryIndex(hashKeyName: string, options: { name?: string } = {}) {
   return (tableClass: ITable<any>, propertyName: string) => {
-    const hash = tableClass.metadata.attributes.find(attr => attr.name === hashKeyName);
+    const hash = tableClass.metadata.attributes.find((attr) => attr.name === hashKeyName);
     if (!hash)
       throw new Error(`Given hashKey ${hashKeyName} is not declared as attribute`);
 
@@ -33,5 +33,5 @@ export function HashGlobalSecondaryIndex(hashKeyName: string, options: { name?: 
       propertyName,
       hash,
     });
-  }
+  };
 }

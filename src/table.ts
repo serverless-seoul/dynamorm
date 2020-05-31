@@ -25,15 +25,16 @@ export class Table {
   }
 
   // raw storage for all attributes this record (instance) has
-  private __attributes: { [key: string]: any } = {};
+  // tslint:disable-next-line: variable-name
+  private attributes: { [key: string]: any } = {};
 
   // Those are pretty much "Private". don't use it if its possible
   setAttribute(name: string, value: any) {
     // Do validation with Attribute metadata maybe
-    this.__attributes[name] = value;
+    this.attributes[name] = value;
   }
   getAttribute(name: string) {
-    return this.__attributes[name];
+    return this.attributes[name];
   }
   setAttributes(attributes: { [name: string]: any }) {
     _.forEach(attributes, (value, name) => {
@@ -41,6 +42,7 @@ export class Table {
     });
   }
 
+  // tslint:disable-next-line: variable-name
   private __writer: Query.Writer<Table>;
   private get writer() {
     if (!this.__writer) {
@@ -57,10 +59,11 @@ export class Table {
 
   serialize() {
     // TODO some serialization logic
-    return this.__attributes;
+    return this.attributes;
   }
 }
 
+// tslint:disable-next-line: interface-name
 export interface ITable<T extends Table> {
   metadata: Metadata.Table.Metadata;
   new(): T;

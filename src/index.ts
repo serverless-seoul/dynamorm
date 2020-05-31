@@ -1,11 +1,12 @@
+// tslint:disable-next-line: no-var-requires
 require("reflect-metadata");
 
-import * as Query from './query';
 import * as Codec from './codec';
-import * as Decorator from './decorator';
-import * as Metadata from './metadata';
 import * as Config from './config';
 import * as Connection from './connections';
+import * as Decorator from './decorator';
+import * as Metadata from './metadata';
+import * as Query from './query';
 import { Table } from './table';
 
 export {
@@ -16,4 +17,4 @@ export {
   Metadata,
   Connection,
   Table,
-}
+};

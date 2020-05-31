@@ -1,6 +1,6 @@
 import * as Metadata from '../metadata';
-import { Table, ITable } from '../table';
 import * as Query from '../query';
+import { ITable, Table } from '../table';
 
 import * as _ from 'lodash';
 
@@ -15,7 +15,7 @@ export function Writer() {
       {
         value: new Query.Writer(tableClass),
         writable: false,
-      }
+      },
     );
-  }
+  };
 }

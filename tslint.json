@@ -1,11 +1,9 @@
 {
-    "defaultSeverity": "error",
-    "extends": [
-    ],
-    "jsRules": {},
-    "rules": {
-        "object-literal-sort-keys": false,
-        "interface-name": [true, "never-prefix"]
-    },
-    "rulesDirectory": []
+  "extends": [
+    "@vingle/tslint-preset"
+  ],
+  "rules": {
+    "max-classes-per-file": false,
+    "only-arrow-functions": false
+  }
 }

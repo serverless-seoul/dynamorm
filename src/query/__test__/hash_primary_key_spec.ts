@@ -5,15 +5,15 @@ const expect = chai.expect;
 
 import * as _ from 'lodash';
 
-import { Table } from '../../table';
 import * as Metadata from '../../metadata';
+import { Table } from '../../table';
 
 import { HashPrimaryKey } from '../hash_primary_key';
 
 import {
-  Table as TableDecorator,
   Attribute as AttributeDecorator,
   HashPrimaryKey as HashPrimaryKeyDecorator,
+  Table as TableDecorator,
 } from '../../decorator';
 
 import * as Query from '../index';
@@ -41,7 +41,7 @@ describe("HashPrimaryKey", () => {
 
     primaryKey = new HashPrimaryKey<Card, number>(
       Card,
-      Card.metadata.primaryKey as Metadata.Indexes.HashPrimaryKeyMetadata
+      Card.metadata.primaryKey as Metadata.Indexes.HashPrimaryKeyMetadata,
     );
   });
 
@@ -56,7 +56,7 @@ describe("HashPrimaryKey", () => {
         Item: {
           id: 10,
           title: "abc",
-        }
+        },
       }).promise();
 
       await primaryKey.delete(10);
@@ -84,10 +84,10 @@ describe("HashPrimaryKey", () => {
 
       const ids = _.sortBy(
         _.concat(res1.records, res2.records),
-        (item) => item.id
-      ).map(c => c.id);
+        (item) => item.id,
+      ).map((c) => c.id);
 
-      expect(ids).to.deep.eq( _.sortBy(cards.map(c => c.id), i => i) );
+      expect(ids).to.deep.eq( _.sortBy(cards.map((c) => c.id), (i) => i) );
     });
   });
 
@@ -108,10 +108,10 @@ describe("HashPrimaryKey", () => {
         await createCard(),
       ];
 
-      const result1 = (await primaryKey.batchGet(cards.map(c => c.id))).records;
+      const result1 = (await primaryKey.batchGet(cards.map((c) => c.id))).records;
 
       // it should keep the order
-      expect(result1.map(c => c.id)).to.deep.eq(cards.map(c => c.id));
+      expect(result1.map((c) => c.id)).to.deep.eq(cards.map((c) => c.id));
     });
   });
 });

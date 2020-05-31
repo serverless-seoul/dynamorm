@@ -10,6 +10,7 @@
     "dynamodb:setup": "node $(npm bin)/local-dynamo --port 8000 & echo $! > $TMPDIR/dynamodb-local.pid; sleep 3",
     "pretest": "rm -Rf dst && tsc -p ./tsconfig.test.json && cd src && find . -name '*.json' -type f -exec cp {} ../dst/{} \\; && cd .. && npm run dynamodb:cleanup && npm run dynamodb:setup",
     "test": "AWS_REGION=us-east-1 AWS_ACCESS_KEY_ID=mock AWS_SECRET_ACCESS_KEY=mock DYNAMO_TYPES_ENDPOINT=http://127.0.0.1:8000 mocha -t 20000 dst/**/__test__/**/*.js",
+    "test:ci": "npm run test -- --forbid-only",
     "posttest": "npm run dynamodb:cleanup",
     "prepublish": "npm run build",
     "ci:publish": "publish",
@@ -25,6 +26,7 @@
     "@types/faker": "^4.1.0",
     "@types/mocha": "2.2.48",
     "@types/node": "6.0.52",
+    "@vingle/tslint-preset": "^2.0.0",
     "chai": "4.2.0",
     "check-engine": "^1.8.0",
     "dynamo-local": "0.0.4",
@@ -32,6 +34,7 @@
     "local-dynamo": "0.5.0",
     "mocha": "3.5.3",
     "publish": "^0.6.0",
+    "tslint": "^6.1.2",
     "typescript": "3.5.2"
   },
   "dependencies": {

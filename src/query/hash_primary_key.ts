@@ -1,11 +1,11 @@
 import { DynamoDB } from 'aws-sdk';
 
-import { Table, ITable } from '../table';
-import * as Metadata from '../metadata';
 import * as Codec from '../codec';
+import * as Metadata from '../metadata';
+import { ITable, Table } from '../table';
 
-import { batchWrite } from "./batch_write";
 import { batchGetFull, batchGetTrim } from "./batch_get";
+import { batchWrite } from "./batch_write";
 import * as Scan from "./scan";
 
 const HASH_KEY_REF = "#hk";
@@ -16,7 +16,7 @@ const RANGE_KEY_REF = "#rk";
 export class HashPrimaryKey<T extends Table, HashKeyType> {
   constructor(
     readonly tableClass: ITable<T>,
-    readonly metadata: Metadata.Indexes.HashPrimaryKeyMetadata
+    readonly metadata: Metadata.Indexes.HashPrimaryKeyMetadata,
   ) {}
 
   async delete(hashKey: HashKeyType) {
@@ -40,15 +40,15 @@ export class HashPrimaryKey<T extends Table, HashKeyType> {
     if (!dynamoRecord.Item) {
       return null;
     } else {
-      return Codec.deserialize(this.tableClass, dynamoRecord.Item)
+      return Codec.deserialize(this.tableClass, dynamoRecord.Item);
     }
   }
 
   async scan(options: {
-    limit?: number,
-    totalSegments?: number,
-    segment?: number,
-    exclusiveStartKey?: DynamoDB.DocumentClient.Key,
+    limit?: number;
+    totalSegments?: number;
+    segment?: number;
+    exclusiveStartKey?: DynamoDB.DocumentClient.Key;
   }) {
     const params: DynamoDB.DocumentClient.ScanInput = {
       TableName: this.tableClass.metadata.name,
@@ -62,7 +62,7 @@ export class HashPrimaryKey<T extends Table, HashKeyType> {
     const result = await this.tableClass.metadata.connection.documentClient.scan(params).promise();
 
     return {
-      records: (result.Items || []).map(item => {
+      records: (result.Items || []).map((item) => {
         return Codec.deserialize(this.tableClass, item);
       }),
       count: result.Count,
@@ -72,47 +72,47 @@ export class HashPrimaryKey<T extends Table, HashKeyType> {
     };
   }
 
-  async batchGet(keys: Array<HashKeyType>) {
+  async batchGet(keys: HashKeyType[]) {
     const res = await batchGetTrim(
       this.tableClass.metadata.connection.documentClient,
       this.tableClass.metadata.name,
       keys.map((key) => {
         return {
           [this.metadata.hash.name]: key,
-        }
-      })
+        };
+      }),
     );
 
     return {
-      records: res.map(item => {
+      records: res.map((item) => {
         return Codec.deserialize(this.tableClass, item);
-      })
+      }),
     };
   }
 
-  async batchGetFull(keys: Array<HashKeyType>) {
+  async batchGetFull(keys: HashKeyType[]) {
     const res = await batchGetFull(
       this.tableClass.metadata.connection.documentClient,
       this.tableClass.metadata.name,
       keys.map((key) => {
         return {
           [this.metadata.hash.name]: key,
-        }
-      })
+        };
+      }),
     );
 
     return {
-      records: res.map(item => {
+      records: res.map((item) => {
         return item ? Codec.deserialize(this.tableClass, item) : undefined;
-      })
+      }),
     };
   }
 
-  async batchDelete(keys: Array<HashKeyType>) {
+  async batchDelete(keys: HashKeyType[]) {
     return await batchWrite(
       this.tableClass.metadata.connection.documentClient,
       this.tableClass.metadata.name,
-      keys.map(key => {
+      keys.map((key) => {
         return {
           DeleteRequest: {
             Key: {
@@ -132,13 +132,13 @@ export class HashPrimaryKey<T extends Table, HashKeyType> {
       [key: string]: [
         DynamoDB.DocumentClient.AttributeAction,
         any
-      ],
+      ];
     },
   ): Promise<void> {
     // Select out only declared Attributes
-    let attributeUpdates: DynamoDB.DocumentClient.AttributeUpdates = {};
+    const attributeUpdates: DynamoDB.DocumentClient.AttributeUpdates = {};
 
-    this.tableClass.metadata.attributes.forEach(attr => {
+    this.tableClass.metadata.attributes.forEach((attr) => {
       const change = changes[attr.propertyName];
       if (change) {
         attributeUpdates[attr.name] = {

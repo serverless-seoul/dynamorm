@@ -5,6 +5,12 @@ jobs:
     runs-on: ubuntu-latest
     container: node:12
     timeout-minutes: 15
+    services:
+      dynamodb:
+        image: amazon/dynamodb-local
+        options: >-
+          --workdir /home/dynamodblocal
+          --health-cmd "curl --fail http://127.0.0.1:8000/shell/ || exit 1" --health-interval 10s --health-timeout 5s --health-retries 5
     steps:
       - uses: actions/checkout@v1
       - name: Prepare
@@ -13,3 +19,5 @@ jobs:
         run: npm run lint
       - name: Test
         run: npm run test:ci
+        env:
+          DYNAMO_TYPES_ENDPOINT: http://dynamodb:8000

@@ -1,8 +1,8 @@
 import * as chai from 'chai';
 const expect = chai.expect;
 
-import { Table } from '../../table';
 import * as Metadata from '../../metadata';
+import { Table } from '../../table';
 
 import { FullPrimaryKey } from '../full_primary_key';
 
@@ -61,7 +61,7 @@ describe("LocalSecondaryIndex", () => {
         hash: 10,
         rangeOrder: "DESC",
         range: [">", 2],
-      })
+      });
 
       expect(res.records.length).to.eq(2);
 

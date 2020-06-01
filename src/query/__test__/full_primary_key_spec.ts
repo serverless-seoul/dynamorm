@@ -1,16 +1,16 @@
-import * as faker from 'faker';
 import * as chai from 'chai';
+import * as faker from 'faker';
 const expect = chai.expect;
 
-import { Table } from '../../table';
 import * as Metadata from '../../metadata';
+import { Table } from '../../table';
 
 import { FullPrimaryKey } from '../full_primary_key';
 
 import {
-  Table as TableDecorator,
   Attribute as AttributeDecorator,
   FullPrimaryKey as FullPrimaryKeyDecorator,
+  Table as TableDecorator,
 } from '../../decorator';
 
 import * as Query from '../index';
@@ -54,19 +54,19 @@ describe("FullPrimaryKey", () => {
         Item: {
           id: 10,
           title: "abc",
-        }
+        },
       }).promise();
 
       await primaryKey.delete(10, "abc");
 
-      expect(await primaryKey.get(10, "abc")).to.be.null;
+      expect(await primaryKey.get(10, "abc")).to.be.eq(null);
     });
   });
 
   describe("#get", async () => {
     it("should find item", async () => {
       const item = await primaryKey.get(10, "abc");
-      expect(item).to.be.null;
+      expect(item).to.be.eq(null);
     });
 
     it("should find item", async () => {
@@ -75,7 +75,7 @@ describe("FullPrimaryKey", () => {
         Item: {
           id: 10,
           title: "abc",
-        }
+        },
       }).promise();
       const item = await primaryKey.get(10, "abc");
       expect(item).to.be.instanceof(Card);
@@ -91,26 +91,26 @@ describe("FullPrimaryKey", () => {
         Item: {
           id: 10,
           title: "abc",
-        }
+        },
       }).promise();
       await Card.metadata.connection.documentClient.put({
         TableName: Card.metadata.name,
         Item: {
           id: 11,
           title: "abc",
-        }
+        },
       }).promise();
       await Card.metadata.connection.documentClient.put({
         TableName: Card.metadata.name,
         Item: {
           id: 12,
           title: "abc",
-        }
+        },
       }).promise();
 
       const items1 = (await primaryKey.batchGet([
         [10, "abc"],
-        [11, "abc"]
+        [11, "abc"],
       ])).records;
       expect(items1.length).to.eq(2);
       expect(items1[0].id).to.eq(10);
@@ -139,26 +139,26 @@ describe("FullPrimaryKey", () => {
         Item: {
           id: 10,
           title: "abc",
-        }
+        },
       }).promise();
       await Card.metadata.connection.documentClient.put({
         TableName: Card.metadata.name,
         Item: {
           id: 10,
           title: "abd",
-        }
+        },
       }).promise();
       await Card.metadata.connection.documentClient.put({
         TableName: Card.metadata.name,
         Item: {
           id: 10,
           title: "aba",
-        }
+        },
       }).promise();
 
       let res = await primaryKey.query({
         hash: 10,
-        range: ["between", "abc", "abf"]
+        range: ["between", "abc", "abf"],
       });
 
       expect(res.records.length).to.eq(2);
@@ -184,25 +184,25 @@ describe("FullPrimaryKey", () => {
         Item: {
           id: 10,
           title: "abc",
-        }
+        },
       }).promise();
       await Card.metadata.connection.documentClient.put({
         TableName: Card.metadata.name,
         Item: {
           id: 10,
           title: "abd",
-        }
+        },
       }).promise();
       await Card.metadata.connection.documentClient.put({
         TableName: Card.metadata.name,
         Item: {
           id: 10,
           title: "aba",
-        }
+        },
       }).promise();
 
-      let res = await primaryKey.scan({
-        limit: 2
+      const res = await primaryKey.scan({
+        limit: 2,
       });
 
       expect(res.records.length).to.eq(2);

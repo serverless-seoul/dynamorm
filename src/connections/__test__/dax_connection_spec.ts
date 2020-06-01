@@ -1,12 +1,13 @@
-import * as chai from 'chai';
-const expect = chai.expect;
+import { expect } from 'chai';
 
 import { DAXConnection } from "../dax_connection";
-const AmazonDaxClient = require('amazon-dax-client');
+
+// tslint:disable-next-line: no-var-requires
+const AmazonDaxClient = require("amazon-dax-client");
 
 import * as AWS from "aws-sdk";
 
-describe(DAXConnection.name, () => {
+describe.skip(DAXConnection.name, () => {
   describe("#constructor", () => {
     it("should work", () => {
       const conn = new DAXConnection({ endpoints: ["vingle-production.zwsblh.clustercfg.dax.use1.cache.amazonaws.com:8111"]});

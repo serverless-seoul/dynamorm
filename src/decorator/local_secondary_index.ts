@@ -1,9 +1,9 @@
 import * as Metadata from '../metadata';
-import { Table, ITable } from '../table';
+import { ITable, Table } from '../table';
 
-export function LocalSecondaryIndex(rangeKeyName: string, options: { name?: string; } = {}) {
+export function LocalSecondaryIndex(rangeKeyName: string, options: { name?: string } = {}) {
   return (tableClass: ITable<any>, propertyName: string) => {
-    const range = tableClass.metadata.attributes.find(attr => attr.name === rangeKeyName);
+    const range = tableClass.metadata.attributes.find((attr) => attr.name === rangeKeyName);
     if (!range)
       throw new Error(`Given hashKey ${rangeKeyName} is not declared as attribute`);
 
@@ -12,5 +12,5 @@ export function LocalSecondaryIndex(rangeKeyName: string, options: { name?: stri
       propertyName,
       range,
     });
-  }
+  };
 }

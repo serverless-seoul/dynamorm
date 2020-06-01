@@ -2,10 +2,10 @@ import * as chai from 'chai';
 const expect = chai.expect;
 
 import {
+  Config,
   Decorator,
   Query,
   Table,
-  Config,
 } from '../index';
 
 describe("Table", () => {
@@ -73,7 +73,6 @@ describe("Table", () => {
     });
 
     const reloadCard = await Card.primaryKey.get(10, "100");
-    console.log(reloadCard);
-    expect(reloadCard).to.be.null;
+    expect(reloadCard).to.be.eq(null);
   });
 });

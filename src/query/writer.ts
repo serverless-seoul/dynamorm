@@ -1,8 +1,8 @@
 // Since in DyanmoDB writing is free from any kind index or what soever
 // whole "writing" operations are bundled into one here
 
-import { ITable, Table } from '../table';
 import { DynamoDB } from 'aws-sdk';
+import { ITable, Table } from '../table';
 
 import * as Codec from '../codec';
 import * as Metadata from '../metadata';
@@ -22,6 +22,7 @@ export class Writer<T extends Table> {
       record.setAttributes(res.Attributes || {});
       return record;
     } catch (e) {
+      // tslint:disable-next-line: no-console
       console.log(`Dynamo-Types Put - ${JSON.stringify(record.serialize(), null, 2)}`);
       throw e;
     }
@@ -31,13 +32,13 @@ export class Writer<T extends Table> {
     return await batchWrite(
       this.tableClass.metadata.connection.documentClient,
       this.tableClass.metadata.name,
-      records.map(record => {
+      records.map((record) => {
         return {
           PutRequest: {
             Item: Codec.serialize(this.tableClass, record),
           },
         };
-      })
+      }),
     );
   }
 
@@ -51,16 +52,16 @@ export class Writer<T extends Table> {
 
 function KeyFromRecord<T extends Table>(
   record: T,
-  metadata: Metadata.Indexes.FullPrimaryKeyMetadata | Metadata.Indexes.HashPrimaryKeyMetadata
+  metadata: Metadata.Indexes.FullPrimaryKeyMetadata | Metadata.Indexes.HashPrimaryKeyMetadata,
 ) {
-  if (metadata.type == 'HASH') {
+  if (metadata.type === 'HASH') {
     return {
-      [metadata.hash.name]: record.getAttribute(metadata.hash.name)
+      [metadata.hash.name]: record.getAttribute(metadata.hash.name),
     };
   } else {
     return {
       [metadata.hash.name]: record.getAttribute(metadata.hash.name),
-      [metadata.range.name]: record.getAttribute(metadata.range.name)
+      [metadata.range.name]: record.getAttribute(metadata.range.name),
     };
   }
 }

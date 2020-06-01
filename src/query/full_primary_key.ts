@@ -1,14 +1,14 @@
 import { DynamoDB } from 'aws-sdk';
 import * as _ from 'lodash';
 
-import { Table, ITable } from '../table';
+import { ITable, Table } from '../table';
 
-import * as Metadata from '../metadata';
 import * as Codec from '../codec';
+import * as Metadata from '../metadata';
 import * as Query from './query';
 
-import { batchWrite } from "./batch_write";
 import { batchGetFull, batchGetTrim } from "./batch_get";
+import { batchWrite } from "./batch_write";
 
 const HASH_KEY_REF = "#hk";
 const HASH_VALUE_REF = ":hkv";
@@ -18,7 +18,7 @@ const RANGE_KEY_REF = "#rk";
 export class FullPrimaryKey<T extends Table, HashKeyType, RangeKeyType> {
   constructor(
     readonly tableClass: ITable<T>,
-    readonly metadata: Metadata.Indexes.FullPrimaryKeyMetadata
+    readonly metadata: Metadata.Indexes.FullPrimaryKeyMetadata,
   ) {}
 
   async delete(hashKey: HashKeyType, sortKey: RangeKeyType) {
@@ -50,11 +50,11 @@ export class FullPrimaryKey<T extends Table, HashKeyType, RangeKeyType> {
     if (!dynamoRecord.Item) {
       return null;
     } else {
-      return Codec.deserialize(this.tableClass, dynamoRecord.Item)
+      return Codec.deserialize(this.tableClass, dynamoRecord.Item);
     }
   }
 
-  async batchGet(keys: Array<[HashKeyType, RangeKeyType]>) {
+  async batchGet(keys: [HashKeyType, RangeKeyType][]) {
     const res = await batchGetTrim(
       this.tableClass.metadata.connection.documentClient,
       this.tableClass.metadata.name,
@@ -62,18 +62,18 @@ export class FullPrimaryKey<T extends Table, HashKeyType, RangeKeyType> {
         return {
           [this.metadata.hash.name]: key[0],
           [this.metadata.range.name]: key[1],
-        }
-      })
+        };
+      }),
     );
 
     return {
-      records: res.map(item => {
+      records: res.map((item) => {
         return Codec.deserialize(this.tableClass, item);
-      })
+      }),
     };
   }
 
-  async batchGetFull(keys: Array<[HashKeyType, RangeKeyType]>) {
+  async batchGetFull(keys: [HashKeyType, RangeKeyType][]) {
     const res = await batchGetFull(
       this.tableClass.metadata.connection.documentClient,
       this.tableClass.metadata.name,
@@ -81,22 +81,22 @@ export class FullPrimaryKey<T extends Table, HashKeyType, RangeKeyType> {
         return {
           [this.metadata.hash.name]: key[0],
           [this.metadata.range.name]: key[1],
-        }
-      })
+        };
+      }),
     );
 
     return {
-      records: res.map(item => {
+      records: res.map((item) => {
         return item ? Codec.deserialize(this.tableClass, item) : undefined;
-      })
+      }),
     };
   }
 
-  async batchDelete(keys: Array<[HashKeyType, RangeKeyType]>) {
+  async batchDelete(keys: [HashKeyType, RangeKeyType][]) {
     return await batchWrite(
       this.tableClass.metadata.connection.documentClient,
       this.tableClass.metadata.name,
-      keys.map(key => {
+      keys.map((key) => {
         return {
           DeleteRequest: {
             Key: {
@@ -105,27 +105,27 @@ export class FullPrimaryKey<T extends Table, HashKeyType, RangeKeyType> {
             },
           },
         };
-      })
+      }),
     );
   }
 
   async query(options: {
-    hash: HashKeyType,
-    range?: Query.Conditions<RangeKeyType>,
-    rangeOrder?: "ASC" | "DESC",
-    limit?: number,
-    exclusiveStartKey?: DynamoDB.DocumentClient.Key,
-    consistent?: boolean,
+    hash: HashKeyType;
+    range?: Query.Conditions<RangeKeyType>;
+    rangeOrder?: "ASC" | "DESC";
+    limit?: number;
+    exclusiveStartKey?: DynamoDB.DocumentClient.Key;
+    consistent?: boolean;
   }) {
     if (!options.rangeOrder) {
       options.rangeOrder = "ASC";
     }
-    const ScanIndexForward = options.rangeOrder === "ASC"
+    const ScanIndexForward = options.rangeOrder === "ASC";
 
     const params: DynamoDB.DocumentClient.QueryInput = {
       TableName: this.tableClass.metadata.name,
       Limit: options.limit,
-      ScanIndexForward: ScanIndexForward,
+      ScanIndexForward,
       ExclusiveStartKey: options.exclusiveStartKey,
       ReturnConsumedCapacity: "TOTAL",
       KeyConditionExpression: `${HASH_KEY_REF} = ${HASH_VALUE_REF}`,
@@ -135,7 +135,7 @@ export class FullPrimaryKey<T extends Table, HashKeyType, RangeKeyType> {
       ExpressionAttributeValues: {
         [HASH_VALUE_REF]: options.hash,
       },
-      ConsistentRead: options.consistent
+      ConsistentRead: options.consistent,
     };
 
     if (options.range) {
@@ -148,7 +148,7 @@ export class FullPrimaryKey<T extends Table, HashKeyType, RangeKeyType> {
     const result = await this.tableClass.metadata.connection.documentClient.query(params).promise();
 
     return {
-      records: (result.Items || []).map(item => {
+      records: (result.Items || []).map((item) => {
         return Codec.deserialize(this.tableClass, item);
       }),
       count: result.Count,
@@ -159,10 +159,10 @@ export class FullPrimaryKey<T extends Table, HashKeyType, RangeKeyType> {
   }
 
   async scan(options: {
-    limit?: number,
-    totalSegments?: number,
-    segment?: number,
-    exclusiveStartKey?: DynamoDB.DocumentClient.Key,
+    limit?: number;
+    totalSegments?: number;
+    segment?: number;
+    exclusiveStartKey?: DynamoDB.DocumentClient.Key;
   }) {
     const params: DynamoDB.DocumentClient.ScanInput = {
       TableName: this.tableClass.metadata.name,
@@ -176,7 +176,7 @@ export class FullPrimaryKey<T extends Table, HashKeyType, RangeKeyType> {
     const result = await this.tableClass.metadata.connection.documentClient.scan(params).promise();
 
     return {
-      records: (result.Items || []).map(item => {
+      records: (result.Items || []).map((item) => {
         return Codec.deserialize(this.tableClass, item);
       }),
       count: result.Count,
@@ -193,12 +193,12 @@ export class FullPrimaryKey<T extends Table, HashKeyType, RangeKeyType> {
       [key: string]: [
         DynamoDB.DocumentClient.AttributeAction,
         any
-      ],
+      ];
     },
   ): Promise<void> {
-    let attributeUpdates: DynamoDB.DocumentClient.AttributeUpdates = {};
+    const attributeUpdates: DynamoDB.DocumentClient.AttributeUpdates = {};
 
-    this.tableClass.metadata.attributes.forEach(attr => {
+    this.tableClass.metadata.attributes.forEach((attr) => {
       const change = changes[attr.propertyName];
       if (change) {
         attributeUpdates[attr.name] = {

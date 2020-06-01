@@ -7,7 +7,7 @@ export async function createTable(metadata: Metadata.Table.Metadata) {
   let KeySchema: DynamoDB.Types.KeySchema;
   let AttributeDefinitions: DynamoDB.Types.AttributeDefinitions;
 
-  if (metadata.primaryKey.type == 'FULL') {
+  if (metadata.primaryKey.type === 'FULL') {
     KeySchema = [{
       AttributeName: metadata.primaryKey.hash.name,
       KeyType: "HASH",
@@ -21,7 +21,7 @@ export async function createTable(metadata: Metadata.Table.Metadata) {
     }, {
       AttributeName: metadata.primaryKey.range.name,
       AttributeType: metadata.primaryKey.range.type,
-    }]
+    }];
   } else {
     KeySchema = [{
       AttributeName: metadata.primaryKey.hash.name,
@@ -33,14 +33,14 @@ export async function createTable(metadata: Metadata.Table.Metadata) {
     }];
   }
 
-  metadata.localSecondaryIndexes.map(index => {
+  metadata.localSecondaryIndexes.map((index) => {
     AttributeDefinitions.push({
       AttributeName: index.range.name,
       AttributeType: index.range.type,
     });
   });
 
-  metadata.globalSecondaryIndexes.map(index => {
+  metadata.globalSecondaryIndexes.map((index) => {
     AttributeDefinitions.push({
       AttributeName: index.hash.name,
       AttributeType: index.hash.type,
@@ -54,7 +54,7 @@ export async function createTable(metadata: Metadata.Table.Metadata) {
     }
   });
 
-  AttributeDefinitions = _.uniqBy(AttributeDefinitions, attr => attr.AttributeName);
+  AttributeDefinitions = _.uniqBy(AttributeDefinitions, (attr) => attr.AttributeName);
 
   const params: DynamoDB.Types.CreateTableInput = {
     /**
@@ -71,7 +71,7 @@ export async function createTable(metadata: Metadata.Table.Metadata) {
     KeySchema,
     LocalSecondaryIndexes:
       metadata.localSecondaryIndexes.length > 0 ?
-        metadata.localSecondaryIndexes.map(index => {
+        metadata.localSecondaryIndexes.map((index) => {
           return {
             IndexName: index.name,
             KeySchema: [{
@@ -83,12 +83,12 @@ export async function createTable(metadata: Metadata.Table.Metadata) {
             }],
             Projection: {
               ProjectionType: "ALL",
-            }
-          }
+            },
+          };
         }) : undefined,
     GlobalSecondaryIndexes:
       metadata.globalSecondaryIndexes.length > 0 ?
-        metadata.globalSecondaryIndexes.map(index => {
+        metadata.globalSecondaryIndexes.map((index) => {
           if (index.type === "FULL") {
             return {
               IndexName: index.name,
@@ -105,7 +105,7 @@ export async function createTable(metadata: Metadata.Table.Metadata) {
               ProvisionedThroughput: {
                 ReadCapacityUnits: 1,
                 WriteCapacityUnits: 1,
-              }
+              },
             };
           } else {
             return {
@@ -120,7 +120,7 @@ export async function createTable(metadata: Metadata.Table.Metadata) {
               ProvisionedThroughput: {
                 ReadCapacityUnits: 1,
                 WriteCapacityUnits: 1,
-              }
+              },
             };
           }
         }) : undefined,
@@ -136,14 +136,14 @@ export async function createTable(metadata: Metadata.Table.Metadata) {
   await metadata.connection.client.waitFor("tableExists", { TableName: metadata.name}).promise();
 
   // TTL
-  const ttlAttribute = metadata.attributes.find(attr => !!attr.timeToLive);
+  const ttlAttribute = metadata.attributes.find((attr) => !!attr.timeToLive);
   if (ttlAttribute) {
     await metadata.connection.client.updateTimeToLive({
       TableName: metadata.name,
       TimeToLiveSpecification: {
         Enabled: true,
         AttributeName: ttlAttribute.name,
-      }
+      },
     }).promise();
   }
 

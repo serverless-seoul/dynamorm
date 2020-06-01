@@ -19,7 +19,7 @@ export async function __batchGet(
   try {
     return await Promise.all(
       _.chunk(keys, MAX_ITEMS)
-        .map(async keysChunk => {
+        .map(async (keysChunk) => {
           const res =
             await documentClient.batchGet({
               RequestItems: {
@@ -31,7 +31,7 @@ export async function __batchGet(
 
           const records = res.Responses![tableName]!;
 
-          return keysChunk.map(key => {
+          return keysChunk.map((key) => {
             return records.find((record) => {
               for (const keyName in key) {
                 if (record[keyName] !== key[keyName]) {
@@ -41,11 +41,12 @@ export async function __batchGet(
               return true;
             });
           });
-        })
+        }),
     ).then((chunks) => {
       return _.flatten(chunks);
     });
   } catch (e) {
+    // tslint:disable-next-line: no-console
     console.log(`Dynamo-Types batchGet - ${JSON.stringify(keys, null, 2)}`);
     throw e;
   }
@@ -68,9 +69,9 @@ export async function batchGetTrim(
   return removeFalsyFilter(await __batchGet(documentClient, tableName, keys));
 }
 
-function removeFalsyFilter<T>(array: Array<T | undefined>) {
+function removeFalsyFilter<T>(array: (T | undefined)[]) {
   const res: T[] = [];
-  array.forEach(item => {
+  array.forEach((item) => {
     if (!!item) {
       res.push(item);
     }

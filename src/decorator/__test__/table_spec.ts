@@ -1,9 +1,9 @@
 import * as chai from 'chai';
 const expect = chai.expect;
 
-import { Table as TableDecorator } from '../table';
 import { Attribute as AttributeDecorator } from '../attribute';
 import { FullPrimaryKey as FullPrimaryKeyDecorator } from '../full_primary_key';
+import { Table as TableDecorator } from '../table';
 import { Writer as WriterDecorator } from '../writer';
 
 import * as Query from '../../query';

@@ -1,14 +1,9 @@
-import * as chai from 'chai';
-const expect = chai.expect;
-
-import * as Metadata from '../../metadata';
-import { Table } from '../../table';
-
-import { FullPrimaryKey } from '../full_primary_key';
-
-import * as Decorator from '../../decorator';
+import { expect } from 'chai';
 
 import * as Query from '../index';
+
+import * as Decorator from '../../decorator';
+import { Table } from '../../table';
 
 @Decorator.Table({ name: "prod-Card" })
 class Card extends Table {

@@ -1,18 +1,17 @@
 // Since in DyanmoDB writing is free from any kind index or what soever
 // whole "writing" operations are bundled into one here
 
-import { DynamoDB } from 'aws-sdk';
-import { ITable, Table } from '../table';
-
 import * as Codec from '../codec';
 import * as Metadata from '../metadata';
+import { ITable, Table } from '../table';
+
 import { batchWrite } from './batch_write';
 
 export class Writer<T extends Table> {
   constructor(private tableClass: ITable<T>) {
   }
 
-  async put(record: T) {
+  public async put(record: T) {
     try {
       const res = await this.tableClass.metadata.connection.documentClient.put({
         TableName: this.tableClass.metadata.name,
@@ -28,7 +27,7 @@ export class Writer<T extends Table> {
     }
   }
 
-  async batchPut(records: T[]) {
+  public async batchPut(records: T[]) {
     return await batchWrite(
       this.tableClass.metadata.connection.documentClient,
       this.tableClass.metadata.name,
@@ -42,7 +41,7 @@ export class Writer<T extends Table> {
     );
   }
 
-  async delete(record: T) {
+  public async delete(record: T) {
     await this.tableClass.metadata.connection.documentClient.delete({
       TableName: this.tableClass.metadata.name,
       Key: KeyFromRecord(record, this.tableClass.metadata.primaryKey),

@@ -1,5 +1,5 @@
 {
-  "name": "dynamorm",
+  "name": "@serverless-seoul/dynamorm",
   "version": "1.0.0",
   "description": "AWS DynamoDB ORM for Typescript",
   "main": "./dst/index.js",

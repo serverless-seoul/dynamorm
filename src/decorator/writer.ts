@@ -1,8 +1,7 @@
-import * as Metadata from '../metadata';
-import * as Query from '../query';
-import { ITable, Table } from '../table';
-
 import * as _ from 'lodash';
+
+import * as Query from '../query';
+import { ITable } from '../table';
 
 // Writer is pretty much "Helper" method.
 // You can still create writer without this decorator, but it seems pretty clear people would need writer for most of classes anyway

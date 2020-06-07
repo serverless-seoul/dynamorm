@@ -1,7 +1,5 @@
-import * as chai from 'chai';
-const expect = chai.expect;
+import { expect } from "chai";
 
-import { DynamoDB } from "aws-sdk";
 import { Attribute } from '../../metadata';
 import * as AttributeValue from '../attribute_value';
 

@@ -43,13 +43,14 @@ export class Table {
   }
 
   // tslint:disable-next-line: variable-name
-  private __writer: Query.Writer<Table>;
-  private get writer() {
+  private __writer: Query.Writer<Table> | undefined = undefined;
+  private get writer(): Query.Writer<Table> {
     if (!this.__writer) {
       this.__writer = new Query.Writer(this.constructor as ITable<Table>);
     }
     return this.__writer;
   }
+
   public async save() {
     return await this.writer.put(this);
   }

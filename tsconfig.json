@@ -5,9 +5,10 @@
         "noImplicitAny": true,
         "sourceMap": true,
         "outDir": "dst",
+        "noUnusedLocals": true,
         "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
-        "strictNullChecks": true
+        "strict": true
     },
     "exclude": [
         "**/__test__/"

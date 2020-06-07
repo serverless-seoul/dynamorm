@@ -1,5 +1,4 @@
-import * as Metadata from '../metadata';
-import { ITable, Table } from '../table';
+import { ITable } from '../table';
 
 export function LocalSecondaryIndex(rangeKeyName: string, options: { name?: string } = {}) {
   return (tableClass: ITable<any>, propertyName: string) => {

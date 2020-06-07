@@ -22,7 +22,7 @@ export class FullPrimaryKey<T extends Table, HashKeyType, RangeKeyType> {
   ) {}
 
   async delete(hashKey: HashKeyType, sortKey: RangeKeyType) {
-    const res = await this.tableClass.metadata.connection.documentClient.delete({
+    await this.tableClass.metadata.connection.documentClient.delete({
       TableName: this.tableClass.metadata.name,
       // ReturnValues: "ALL_OLD",
       Key: {
@@ -208,14 +208,13 @@ export class FullPrimaryKey<T extends Table, HashKeyType, RangeKeyType> {
       }
     });
 
-    const dynamoRecord =
-      await this.tableClass.metadata.connection.documentClient.update({
-        TableName: this.tableClass.metadata.name,
-        Key: {
-          [this.metadata.hash.name]: hashKey,
-          [this.metadata.range.name]: sortKey,
-        },
-        AttributeUpdates: attributeUpdates,
-      }).promise();
+    await this.tableClass.metadata.connection.documentClient.update({
+      TableName: this.tableClass.metadata.name,
+      Key: {
+        [this.metadata.hash.name]: hashKey,
+        [this.metadata.range.name]: sortKey,
+      },
+      AttributeUpdates: attributeUpdates,
+    }).promise();
   }
 }

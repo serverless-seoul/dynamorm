@@ -2,6 +2,10 @@
 Typescript ORM of DynamoDB, written from scratch to fully support DynamoDB.
 This is hard fork of https://github.com/balmbees/dynamo-types, for active maintenance reason
 
+## Quick Start
+1. Install  
+   npm install @serverless-seoul/dynamorm
+
 ## Features
 1. Serialize / Deserialize DynamoDB record -> TS class object based on annotations.
 2. Table Configurations

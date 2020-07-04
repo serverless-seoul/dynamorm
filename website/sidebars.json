@@ -1,0 +1,11 @@
+{
+  "docs": {
+    "Guide": [
+      "introduction",
+      "quick-start"
+    ]
+  },
+  "docs-other": {
+    "First Category": ["doc4", "doc5"]
+  }
+}

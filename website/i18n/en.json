@@ -5,17 +5,8 @@
     "previous": "Previous",
     "tagline": "Typescript ORM of AWS DynamoDB, fully typed",
     "docs": {
-      "doc2": {
-        "title": "document number 2"
-      },
-      "doc3": {
-        "title": "This is document number 3"
-      },
-      "doc4": {
-        "title": "Other Document"
-      },
-      "doc5": {
-        "title": "Fifth Document"
+      "api": {
+        "title": "API"
       },
       "introduction": {
         "title": "Introduction",
@@ -32,12 +23,9 @@
     },
     "categories": {
       "Guide": "Guide",
-      "First Category": "First Category"
+      "API": "API"
     }
   },
   "pages-strings": {
-    "Help Translate|recruit community translators for your project": "Help Translate",
-    "Edit this Doc|recruitment message asking to edit the doc source": "Edit",
-    "Translate this Doc|recruitment message asking to translate the docs": "Translate"
   }
 }

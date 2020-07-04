@@ -3,9 +3,9 @@
     "Guide": [
       "introduction",
       "quick-start"
+    ],
+    "API": [
+      "api"
     ]
-  },
-  "docs-other": {
-    "First Category": ["doc4", "doc5"]
   }
 }

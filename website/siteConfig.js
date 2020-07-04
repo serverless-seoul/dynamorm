@@ -32,8 +32,7 @@ const siteConfig = {
   // For no header links in the top nav bar -> headerLinks: [],
   headerLinks: [
     { doc: 'introduction', label: 'Guide' },
-    { doc: 'doc4', label: 'API' },
-    // { page: 'help', label: 'Help' },
+    { doc: 'api', label: 'API' },
   ],
 
   // If you have users set above, you add it here:
@@ -48,32 +47,21 @@ const siteConfig = {
   colors: {
     primaryColor: '#092532',
     secondaryColor: '#89c9b8',
+    highlightColor: '#008972',
   },
-
-  /* Custom fonts for website */
-  /*
-  fonts: {
-    myFont: [
-      "Times New Roman",
-      "Serif"
-    ],
-    myOtherFont: [
-      "-apple-system",
-      "system-ui"
-    ]
-  },
-  */
 
   // This copyright info is used in /core/Footer.js and blog RSS/Atom feeds.
   copyright: `Copyright © ${new Date().getFullYear()} Your Name or Your Company Name`,
 
   highlight: {
     // Highlight.js theme to use for syntax highlighting in code blocks.
-    theme: 'default',
+    theme: "atom-one-dark"
   },
 
   // Add custom scripts here that would be placed in <script> tags.
-  scripts: ['https://buttons.github.io/buttons.js'],
+  scripts: [
+    'https://buttons.github.io/buttons.js'
+  ],
 
   // On page navigation for the current documentation page.
   onPageNav: 'separate',
@@ -86,9 +74,6 @@ const siteConfig = {
   stylesheets: [
     "https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400&display=swap"
   ],
-  highlight: {
-    theme: "atom-one-dark"
-  }
 
   // For sites with a sizable amount of content, set collapsible to true.
   // Expand/collapse the links and subcategories under categories.

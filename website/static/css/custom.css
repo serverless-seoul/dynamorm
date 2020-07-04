@@ -11,6 +11,14 @@ html, body {
   font-family: 'Open Sans';
 }
 
+a {
+  color: $highlightColor;
+}
+
+a:hover {
+  color: $secondaryColor;
+}
+
 /*
 @media only screen and (min-device-width: 360px) and (max-device-width: 736px) {
 }

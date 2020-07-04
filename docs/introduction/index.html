@@ -1,0 +1,97 @@
+<!DOCTYPE html><html lang="en"><head><meta charSet="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><title>Introduction · Dynamorm</title><meta name="viewport" content="width=device-width"/><meta name="generator" content="Docusaurus"/><meta name="description" content="## What Is Dynamorm?"/><meta name="docsearch:language" content="en"/><meta property="og:title" content="Introduction · Dynamorm"/><meta property="og:type" content="website"/><meta property="og:url" content="https://serverless-seoul.github.io/dynamorm/"/><meta property="og:description" content="## What Is Dynamorm?"/><meta property="og:image" content="https://serverless-seoul.github.io/dynamorm/img/undraw_online.svg"/><meta name="twitter:card" content="summary"/><meta name="twitter:image" content="https://serverless-seoul.github.io/dynamorm/img/undraw_tweetstorm.svg"/><link rel="shortcut icon" href="/dynamorm/img/favicon.png"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css"/><script type="text/javascript" src="https://buttons.github.io/buttons.js"></script><script src="/dynamorm/js/scrollSpy.js"></script><link rel="stylesheet" href="/dynamorm/css/main.css"/><script src="/dynamorm/js/codetabs.js"></script></head><body class="sideNavVisible separateOnPageNav"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/dynamorm/"><img class="logo" src="/dynamorm/img/favicon.png" alt="Dynamorm"/><h2 class="headerTitleWithLogo">Dynamorm</h2></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li class="siteNavGroupActive siteNavItemActive"><a href="/dynamorm/docs/introduction" target="_self">Quickstart</a></li><li class=""><a href="/dynamorm/docs/doc4" target="_self">API</a></li><li class=""><a href="/dynamorm/help" target="_self">Help</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="docsNavContainer" id="docsNav"><nav class="toc"><div class="toggleNav"><section class="navWrapper wrapper"><div class="navBreadcrumb wrapper"><div class="navToggle" id="navToggler"><div class="hamburger-menu"><div class="line1"></div><div class="line2"></div><div class="line3"></div></div></div><h2><i>›</i><span>Introduction</span></h2><div class="tocToggler" id="tocToggler"><i class="icon-toc"></i></div></div><div class="navGroups"><div class="navGroup"><h3 class="navGroupCategoryTitle">Introduction</h3><ul class=""><li class="navListItem navListItemActive"><a class="navItem" href="/dynamorm/docs/introduction">Docs</a></li></ul></div></div></section></div><script>
+            var coll = document.getElementsByClassName('collapsible');
+            var checkActiveCategory = true;
+            for (var i = 0; i < coll.length; i++) {
+              var links = coll[i].nextElementSibling.getElementsByTagName('*');
+              if (checkActiveCategory){
+                for (var j = 0; j < links.length; j++) {
+                  if (links[j].classList.contains('navListItemActive')){
+                    coll[i].nextElementSibling.classList.toggle('hide');
+                    coll[i].childNodes[1].classList.toggle('rotate');
+                    checkActiveCategory = false;
+                    break;
+                  }
+                }
+              }
+
+              coll[i].addEventListener('click', function() {
+                var arrow = this.childNodes[1];
+                arrow.classList.toggle('rotate');
+                var content = this.nextElementSibling;
+                content.classList.toggle('hide');
+              });
+            }
+
+            document.addEventListener('DOMContentLoaded', function() {
+              createToggler('#navToggler', '#docsNav', 'docsSliderActive');
+              createToggler('#tocToggler', 'body', 'tocActive');
+
+              var headings = document.querySelector('.toc-headings');
+              headings && headings.addEventListener('click', function(event) {
+                var el = event.target;
+                while(el !== headings){
+                  if (el.tagName === 'A') {
+                    document.body.classList.remove('tocActive');
+                    break;
+                  } else{
+                    el = el.parentNode;
+                  }
+                }
+              }, false);
+
+              function createToggler(togglerSelector, targetSelector, className) {
+                var toggler = document.querySelector(togglerSelector);
+                var target = document.querySelector(targetSelector);
+
+                if (!toggler) {
+                  return;
+                }
+
+                toggler.onclick = function(event) {
+                  event.preventDefault();
+
+                  target.classList.toggle(className);
+                };
+              }
+            });
+        </script></nav></div><div class="container mainContainer docsContainer"><div class="wrapper"><div class="post"><header class="postHeader"><h1 id="__docusaurus" class="postHeaderTitle">Introduction</h1></header><article><div><span><h2><a class="anchor" aria-hidden="true" id="what-is-dynamorm"></a><a href="#what-is-dynamorm" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>What Is Dynamorm?</h2>
+<p>Dynamorm is a <strong>native Typescript</strong> ORM for <a href="https://aws.amazon.com/dynamodb/">AWS DynamoDB</a>  <br>
+Written in Typescript from scratch, Fully support typing through template / decorator syntax</p>
+<!-- This is hard fork of https://github.com/balmbees/dynamo-types, for active maintenance reason   -->
+<h2><a class="anchor" aria-hidden="true" id="key-features"></a><a href="#key-features" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Key Features</h2>
+<ul>
+<li>DynamoDB record &lt;-&gt; plain TS class mapping, based on decorator</li>
+<li>Table Configurations</li>
+<li>PrimaryKey
+<ul>
+<li>FullPrimaryKey (Hash, Range)</li>
+<li>HashPrimaryKey (Hash)</li>
+</ul></li>
+<li>Local / Global Secondary Indexes</li>
+<li>Attribute
+<ul>
+<li>Type Support (Number / String / Boolean / Array / Object / Buffer)</li>
+<li>TimeToLive</li>
+</ul></li>
+<li>DAX Support
+<ul>
+<li>You can specify this by setting the connection of table.</li>
+</ul></li>
+<li>Optimized aws-sdk usage
+<ul>
+<li>aws-sdk has a problem of not reusing HTTP connection towards DynamoDB by default. check <a href="https://github.com/aws/aws-sdk-js/issues/900">this issue</a></li>
+<li>this could often cause serious latency of &gt; 100ms. it has been optimized here by keep-alive <a href="https://github.com/serverless-seoul/dynamorm/blob/master/src/connections/dynamodb_connection.ts#L37">Code</a></li>
+</ul></li>
+<li>AWS X-Ray support</li>
+<li>Testing (Local DynamoDB) support</li>
+</ul>
+<h2><a class="anchor" aria-hidden="true" id="why-not-other-libraries"></a><a href="#why-not-other-libraries" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Why not other libraries?</h2>
+<p>&quot;Do not reinvent the wheel&quot; is very important statements for us too.<br>
+there are some other Javascript DynamoDB ORMs, but we've decided to make one that better on those aspects:</p>
+<ol>
+<li>Plain ES6 class based ORM
+Most of other libraries has been built before ES6 become widely adapted,<br>
+thus those rely on custom javascript object rather than plain ES6 class.</li>
+<li></li>
+</ol>
+</span></div></article></div><div class="docs-prevnext"></div></div></div><nav class="onPageNav"><ul class="toc-headings"><li><a href="#what-is-dynamorm">What Is Dynamorm?</a></li><li><a href="#key-features">Key Features</a></li><li><a href="#why-not-other-libraries">Why not other libraries?</a></li></ul></nav></div><footer class="nav-footer" id="footer"><section class="sitemap"><a href="/dynamorm/" class="nav-home"><img src="/dynamorm/img/favicon.png" alt="Dynamorm" width="66" height="58"/></a><div><h5>Docs</h5><a href="/dynamorm/docs/en/doc1.html">Getting Started (or other categories)</a><a href="/dynamorm/docs/en/doc2.html">Guides (or other categories)</a><a href="/dynamorm/docs/en/doc3.html">API Reference (or other categories)</a></div><div><h5>Community</h5><a href="/dynamorm/en/users.html">User Showcase</a><a href="https://stackoverflow.com/questions/tagged/" target="_blank" rel="noreferrer noopener">Stack Overflow</a><a href="https://discordapp.com/">Project Chat</a><a href="https://twitter.com/" target="_blank" rel="noreferrer noopener">Twitter</a></div><div><h5>More</h5><a href="/dynamorm/blog">Blog</a><a href="https://github.com/">GitHub</a><a class="github-button" data-icon="octicon-star" data-count-href="/facebook/docusaurus/stargazers" data-show-count="true" data-count-aria-label="# stargazers on GitHub" aria-label="Star this project on GitHub">Star</a></div></section></footer></div></body></html>

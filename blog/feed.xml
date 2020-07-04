@@ -9,7 +9,7 @@
         <generator>https://github.com/jpmonette/feed</generator>
         <image>
             <title>Dynamorm Blog</title>
-            <url>https://serverless-seoul.github.io/dynamorm/img/favicon.ico</url>
+            <url>https://serverless-seoul.github.io/dynamorm/img/favicon.png</url>
             <link>https://serverless-seoul.github.io/dynamorm/blog</link>
         </image>
         <copyright>Copyright © 2020 Your Name or Your Company Name</copyright>

@@ -2,6 +2,21 @@
   "name": "@serverless-seoul/dynamorm",
   "version": "1.0.0",
   "description": "AWS DynamoDB ORM for Typescript",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/serverless-seoul/dynamorm.git"
+  },
+  "keywords": [
+    "DynamoDB",
+    "AWS",
+    "Typescript",
+    "ORM",
+    "Serverless"
+  ],
+  "bugs": {
+    "url": "https://github.com/serverless-seoul/dynamorm/issues"
+  },
+  "homepage": "https://github.com/serverless-seoul/dynamorm",
   "main": "./dst/index.js",
   "typings": "./dst/index.d.ts",
   "scripts": {

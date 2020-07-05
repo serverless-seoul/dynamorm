@@ -4,6 +4,11 @@
 
 # Dynamorm
 Typescript ORM of DynamoDB, written from scratch to fully support DynamoDB.  
-This is hard fork of https://github.com/balmbees/dynamo-types, for active maintenance reason
+*This is hard fork of [dynamo-types](https://github.com/balmbees/dynamo-types), for active maintenance reason*
 
-**Checkout [Full Documents](https://serverless-seoul.github.io/dynamorm/docs/introduction)!**
+# Install
+```
+  npm install @serverless-seoul/dynamorm
+```
+
+# **[Checkout Full Documents](https://serverless-seoul.github.io/dynamorm/docs/introduction)!**

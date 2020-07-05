@@ -47,7 +47,7 @@ export async function __batchGet(
     });
   } catch (e) {
     // tslint:disable-next-line: no-console
-    console.log(`Dynamo-Types batchGet - ${JSON.stringify(keys, null, 2)}`);
+    console.log(`Dynamorm batchGet - ${JSON.stringify(keys, null, 2)}`);
     throw e;
   }
 }
@@ -66,15 +66,5 @@ export async function batchGetTrim(
   tableName: string,
   keys: DynamoDB.DocumentClient.KeyList,
 ) {
-  return removeFalsyFilter(await __batchGet(documentClient, tableName, keys));
-}
-
-function removeFalsyFilter<T>(array: (T | undefined)[]) {
-  const res: T[] = [];
-  array.forEach((item) => {
-    if (!!item) {
-      res.push(item);
-    }
-  });
-  return res;
+  return _.compact(await __batchGet(documentClient, tableName, keys));
 }

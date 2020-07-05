@@ -1,0 +1,12 @@
+{
+  "docs": {
+    "Guide": [
+      "introduction",
+      "quick-start"
+    ],
+    "API": [
+      "model",
+      "query"
+    ]
+  }
+}

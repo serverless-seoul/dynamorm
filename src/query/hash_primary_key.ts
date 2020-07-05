@@ -118,8 +118,6 @@ export class HashPrimaryKey<T extends Table, HashKeyType> {
     );
   }
 
-  // Let'just don't use Scan if it's possible
-  // async scan()
   async update(
     hashKey: HashKeyType,
     changes: {

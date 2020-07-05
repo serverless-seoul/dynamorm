@@ -72,7 +72,7 @@ const siteConfig = {
   ogImage: 'img/undraw_online.svg',
   twitterImage: 'img/undraw_tweetstorm.svg',
   stylesheets: [
-    "https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400&display=swap"
+    "https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap"
   ],
 
   // For sites with a sizable amount of content, set collapsible to true.

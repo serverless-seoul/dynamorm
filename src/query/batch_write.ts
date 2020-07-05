@@ -20,7 +20,7 @@ export async function batchWrite(
     );
   } catch (e) {
     // tslint:disable-next-line: no-console
-    console.log(`Dynamo-Types batchWrite - ${JSON.stringify(requests, null, 2)}`);
+    console.log(`Dynamorm batchWrite - ${JSON.stringify(requests, null, 2)}`);
     throw e;
   }
 }

@@ -5,7 +5,8 @@
       "quick-start"
     ],
     "API": [
-      "api"
+      "model",
+      "query"
     ]
   }
 }

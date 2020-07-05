@@ -9,6 +9,11 @@
 
 html, body {
   font-family: 'Open Sans';
+  font-weight: 400;
+}
+
+strong, b {
+  font-weight: 700;
 }
 
 a {

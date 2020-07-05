@@ -45,13 +45,13 @@ import {
   Decorator,
   Query,
   Table,
-} from "dynamo-types";
+} from "@serverless-seoul/dynamorm";
 
 @Decorator.Table({ name: `your_table_name_on_aws_dynamodb` })
 export class BlogPost extends Table {
   // Here we define this tables primaryKey as "Hash" - which means it'll only have hash key, no rangekey
   @Decorator.HashPrimaryKey("id")
-  public static readonly primaryKey: Query.HashPrimaryKey<CardStat, number>; 
+  public static readonly primaryKey: Query.HashPrimaryKey<BlogPost, number>; 
 
   // Writer is optional syntax sugar - only needed for none instance method operations, such as batchUpdate
   @Decorator.Writer()

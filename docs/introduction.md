@@ -7,7 +7,6 @@ sidebar_label: Introduction
 ## What Is Dynamorm?
 Dynamorm is a **native Typescript** ORM for [AWS DynamoDB](https://aws.amazon.com/dynamodb/)  
 Written in Typescript from scratch, Fully support typing through template / decorator syntax
-<!-- This is hard fork of https://github.com/balmbees/dynamo-types, for active maintenance reason   -->
 
 ## Key Features
 - DynamoDB record ⇄ plain TS class mapping, based on decorator
@@ -25,9 +24,9 @@ Written in Typescript from scratch, Fully support typing through template / deco
   - DynamoDB BatchGet has a limit of a maximum of 100 items per requests, 
     - Dynamorm automatically parallelize this
   - DynamoDB BatchGet doesn't keep the order of items as it is in input keys
-    - dynamo-types sort return items based on input keys
+    - dynamorm sort return items based on input keys
   - DynamoDB BatchGet doesn't handle "missing items".
-    - dynamo-types has "BatchGet" / "BatchGetFull"
+    - dynamorm has "BatchGet" / "BatchGetFull"
     - BatchGet
       - order items follow to keys, missing items are just missing. returns ```Promise<Array<Model>>```
     - BatchGetFull

@@ -12,6 +12,14 @@
         "title": "Introduction",
         "sidebar_label": "Introduction"
       },
+      "model": {
+        "title": "Model",
+        "sidebar_label": "Model"
+      },
+      "query": {
+        "title": "Query",
+        "sidebar_label": "Query"
+      },
       "quick-start": {
         "title": "Quick Start",
         "sidebar_label": "Quick Start"
@@ -27,5 +35,8 @@
     }
   },
   "pages-strings": {
+    "Help Translate|recruit community translators for your project": "Help Translate",
+    "Edit this Doc|recruitment message asking to edit the doc source": "Edit",
+    "Translate this Doc|recruitment message asking to translate the docs": "Translate"
   }
 }

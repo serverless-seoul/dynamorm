@@ -22,7 +22,7 @@ export class Writer<T extends Table> {
       return record;
     } catch (e) {
       // tslint:disable-next-line: no-console
-      console.log(`Dynamo-Types Put - ${JSON.stringify(record.serialize(), null, 2)}`);
+      console.log(`Dynamorm Put - ${JSON.stringify(record.serialize(), null, 2)}`);
       throw e;
     }
   }

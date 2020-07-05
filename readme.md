@@ -32,16 +32,16 @@ This is hard fork of https://github.com/balmbees/dynamo-types, for active mainte
 9. Testing
    - You can change the endpoint of DynamoDB by setting the environment variable or setting new connection, So you can install [local-dynamo](https://www.npmjs.com/package/local-dynamo) locally at setup endpoint to local. refer package.json for the detailed how-to
 
-Also, dynamo-types let you overcome several limits that DynamoDB or the aws-sdk has.
+Also, dynamorm let you overcome several limits that DynamoDB or the aws-sdk has.
 
 1. BatchWrite (batchDelete / batchPut) has a limit of a maximum of 25 items per request.
-   - dynamo-types automatically splits given items into chunks of 25 and sends requests in parallel
+   - dynamorm automatically splits given items into chunks of 25 and sends requests in parallel
 2. BatchGet has a limit of a maximum of 100 items per requests
-   - dynamo-types automatically splits given keys to chunks of 100 and sends requests in parallel
+   - dynamorm automatically splits given keys to chunks of 100 and sends requests in parallel
 3. BatchGet doesn't keep the order of items as it is in input keys,
-   - dynamo-types sort return items based on input keys
+   - dynamorm sort return items based on input keys
 4. BatchGet doesn't handle "missing items".
-   - dynamo-types has "BatchGet" / "BatchGetFull" 
+   - dynamorm has "BatchGet" / "BatchGetFull" 
      - BatchGet  
         order items follow to keys, missing items are just missing. return type Promise<Array<Item>>  
         so keys.legnth !== items.keys in this case  
@@ -122,7 +122,7 @@ import {
   Decorator,
   Query,
   Table,
-} from "dynamo-types";
+} from "dynamorm";
 
 @Decorator.Table({ name: `table_name` })
 export class CardStat extends Table {
@@ -159,7 +159,7 @@ Dynamorm utilize [reflect-metadata](https://github.com/rbuckton/reflect-metadata
 
 ### Connection
 DynamoDB supports 2 different kinds of connections. Plain connections to DynamoDB through HTTP, or through DAX.
-dynamo-types supports this by letting you create a separate connection for each table.
+dynamorm supports this by letting you create a separate connection for each table.
 
 ```typescript
 @Decorator.Table({ name: "prod-Card1", connection: new DAXConnection({ endpoints: ["dax-domain:8892"] }) })

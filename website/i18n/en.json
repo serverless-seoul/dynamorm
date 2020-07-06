@@ -23,6 +23,10 @@
       "quick-start": {
         "title": "Quick Start",
         "sidebar_label": "Quick Start"
+      },
+      "streaming": {
+        "title": "Streaming (Change Data Capture)",
+        "sidebar_label": "Streaming"
       }
     },
     "links": {

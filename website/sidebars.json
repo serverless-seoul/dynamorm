@@ -2,7 +2,8 @@
   "docs": {
     "Guide": [
       "introduction",
-      "quick-start"
+      "quick-start",
+      "streaming"
     ],
     "API": [
       "model",

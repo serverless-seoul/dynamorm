@@ -32,10 +32,10 @@ function defineAttributeProperties(table: ITable<any>) {
       {
         configurable: true,
         enumerable: true,
-        get(this:TableClass) {
+        get(this: TableClass) {
           return this.getAttribute(attr.name);
         },
-        set(this:TableClass, v) {
+        set(this: TableClass, v) {
           this.setAttribute(attr.name, v);
         },
       },

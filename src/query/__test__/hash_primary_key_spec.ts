@@ -91,6 +91,57 @@ describe("HashPrimaryKey", () => {
     });
   });
 
+  describe("#scanAll", () => {
+    it("should find all items", async () => {
+      async function createCard() {
+        const card = new Card();
+        card.id = faker.random.number();
+        await card.save();
+        return card;
+      }
+
+      const cards = [
+        await createCard(),
+        await createCard(),
+        await createCard(),
+        await createCard(),
+      ];
+
+      const res = await primaryKey.scanAll({});
+
+      const ids = _.sortBy(
+        res.records,
+        (item) => item.id,
+      ).map((c) => c.id);
+
+      expect(ids).to.deep.eq( _.sortBy(cards.map((c) => c.id), (i) => i) );
+    });
+
+    it("should find all items with parallelize", async () => {
+      async function createCard() {
+        const card = new Card();
+        card.id = faker.random.number();
+        await card.save();
+        return card;
+      }
+
+      const cards = [
+        await createCard(),
+        await createCard(),
+        await createCard(),
+        await createCard(),
+      ];
+
+      const res = await primaryKey.scanAll({ parallelize: 3 });
+
+      const ids = _.sortBy(
+        res.records,
+        (item) => item.id,
+      ).map((c) => c.id);
+
+      expect(ids).to.deep.eq( _.sortBy(cards.map((c) => c.id), (i) => i) );
+    });
+  });
 
   describe("#batchGet", async () => {
     it ("should return results in order", async () => {

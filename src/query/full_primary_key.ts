@@ -186,6 +186,48 @@ export class FullPrimaryKey<T extends Table, HashKeyType, RangeKeyType> {
     };
   }
 
+  async scanAll(options: {
+    parallelize?: number;
+    limit?: number;
+  }) {
+    if (options.parallelize && options.parallelize < 1) {
+      throw new Error("Parallelize value at scanAll always positive number");
+    }
+    const buffer: T[] = [];
+    const totalSegments = options.parallelize || 1;
+    const scanners = _.times(totalSegments)
+      .map((i) => (async (exclusiveStartKey?: DynamoDB.DocumentClient.Key) =>
+        await this.scan({
+          limit: options.limit,
+          totalSegments,
+          segment: i,
+          exclusiveStartKey,
+        })),
+      );
+    let lastEvaluatedKeys = new Array<DynamoDB.DocumentClient.Key | undefined>(totalSegments);
+    _.fill(lastEvaluatedKeys, undefined);
+
+    do {
+      const results = await Promise.all(
+        _.times(totalSegments)
+          .map((i) => scanners[i](lastEvaluatedKeys[i])),
+      );
+
+      buffer.push(
+        ..._.chain(results)
+          .map(({ records }) => records)
+          .flatten()
+          .value(),
+      );
+      lastEvaluatedKeys = results.map(({ lastEvaluatedKey }) => lastEvaluatedKey);
+    } while(_.compact(lastEvaluatedKeys).length);
+
+    return {
+      records: buffer,
+      count: buffer.length,
+    };
+  }
+
   async update(
     hashKey: HashKeyType,
     sortKey: RangeKeyType,

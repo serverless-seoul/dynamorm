@@ -14,34 +14,38 @@ export async function scanAll(
   }
   const buffer: DynamoDB.AttributeMap[] = [];
   const totalSegments = options.parallelize || 1;
-  const scanners = _.times(totalSegments)
-    .map((i) => (async (exclusiveStartKey?: DynamoDB.DocumentClient.Key) =>
-      await documentClient.scan({
-        TableName: tableName,
-        Limit: options.scanBatchSize,
-        ExclusiveStartKey: exclusiveStartKey,
-        ReturnConsumedCapacity: "TOTAL",
-        TotalSegments: totalSegments,
-        Segment: i,
-      }).promise()),
-    );
-  let lastEvaluatedKeys = new Array<DynamoDB.DocumentClient.Key | undefined>(totalSegments);
-  _.fill(lastEvaluatedKeys, undefined);
+  let scanners = _.times(totalSegments)
+    .map((i) => ({
+      scanner: async (exclusiveStartKey?: DynamoDB.DocumentClient.Key) =>
+        await documentClient.scan({
+          TableName: tableName,
+          Limit: options.scanBatchSize,
+          ExclusiveStartKey: exclusiveStartKey,
+          ReturnConsumedCapacity: "TOTAL",
+          TotalSegments: totalSegments,
+          Segment: i,
+        }).promise(),
+      key: undefined as DynamoDB.DocumentClient.Key | undefined,
+    }));
 
   do {
     const results = await Promise.all(
-      _.times(totalSegments)
-        .map((i) => scanners[i](lastEvaluatedKeys[i])),
+      _.chain(scanners)
+        .map(async ({ scanner, key }) => await scanner(key))
+        .value(),
     );
-
     buffer.push(
       ..._.chain(results)
         .map(({ Items }) => (Items || []))
         .flatten()
         .value(),
     );
-    lastEvaluatedKeys = results.map(({ LastEvaluatedKey }) => LastEvaluatedKey);
-  } while(_.compact(lastEvaluatedKeys).length);
+    scanners = scanners
+      .map(({ scanner }, index) => ({
+        scanner, key: results[index].LastEvaluatedKey,
+      }))
+      .filter(({ key }) => !!key );
+  } while(scanners.length);
 
   return buffer;
 }

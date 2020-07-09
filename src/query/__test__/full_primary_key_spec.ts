@@ -237,10 +237,6 @@ describe("FullPrimaryKey", () => {
       const res = await primaryKey.scanAll({});
 
       expect(res.records.length).to.eq(3);
-      // Ordered by range key since it's "scan"
-      expect(res.records[0].title).to.eq("aba");
-      expect(res.records[1].title).to.eq("abc");
-      expect(res.records[2].title).to.eq("abd");
     });
 
     it("should find all items with parallelize", async () => {

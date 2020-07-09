@@ -105,9 +105,16 @@ describe("HashPrimaryKey", () => {
         await createCard(),
         await createCard(),
         await createCard(),
+        await createCard(),
+        await createCard(),
+        await createCard(),
+        await createCard(),
+        await createCard(),
+        await createCard(),
+        await createCard(),
       ];
 
-      const res = await primaryKey.scanAll({});
+      const res = await primaryKey.scanAll({ scanBatchSize: 1 });
 
       const ids = _.sortBy(
         res.records,

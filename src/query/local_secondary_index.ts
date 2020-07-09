@@ -74,10 +74,6 @@ export class LocalSecondaryIndex<T extends Table, HashKeyType, RangeKeyType> {
     parallelize?: number;
     scanBatchSize?: number;
   }) {
-    if (options.parallelize && options.parallelize < 1) {
-      throw new Error("Parallelize value at scanAll always positive number");
-    }
-
     const res = await scanAll(
       this.tableClass.metadata.connection.documentClient,
       this.tableClass.metadata.name,

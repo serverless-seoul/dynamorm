@@ -12,4 +12,43 @@ Written in Typescript from scratch, Fully support typing through template / deco
   npm install @serverless-seoul/dynamorm
 ```
 
+# How does it looks like?
+```typescript
+import {
+  Config,
+  Decorator,
+  Query,
+  Table,
+} from "@serverless-seoul/dynamorm";
+
+@Decorator.Table({ name: `your_table_name_on_aws_dynamodb` })
+export class BlogPost extends Table {
+  @Decorator.HashPrimaryKey("id")
+  public static readonly primaryKey: Query.HashPrimaryKey<BlogPost, number>; 
+
+  @Decorator.Attribute({ name: "id" })
+  public id: string!;
+
+  @Decorator.Attribute({ name: "title" })
+  public title: string!;
+
+  @Decorator.Attribute({ name: "body" })
+  public body: Array<
+    | { type: "text", text: string }
+    | { type: "image", url: string, width: number, height: number }
+  > = [];
+
+  @Decorator.Attribute()
+  public viewCount: number = 0;
+
+  @Decorator.Attribute()
+  public author: {
+    name: string;
+    profileImageURL: string;
+  }
+}
+```
+
+
 # **[Checkout Full Documents](https://serverless-seoul.github.io/dynamorm/docs/introduction)!**
+and figure out all the features!

@@ -20,13 +20,13 @@ class Card extends Table {
   public static readonly primaryKey: Query.FullPrimaryKey<Card, number, string>;
 
   @AttributeDecorator({ name: "i" })
-  public id: number;
+  public id!: number;
 
   @AttributeDecorator({ name: "t" })
-  public title: string;
+  public title!: string;
 
   @AttributeDecorator( { name: "c" })
-  public count: number;
+  public count!: number;
 }
 
 describe("Writer", () => {

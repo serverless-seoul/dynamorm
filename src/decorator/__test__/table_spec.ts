@@ -18,13 +18,13 @@ class Card extends Table {
   public static readonly writer: Query.Writer<Card>;
 
   @AttributeDecorator()
-  public id: number;
+  public id!: number;
 
   @AttributeDecorator()
-  public title: string;
+  public title!: string;
 
   @AttributeDecorator({ name: "complicated_field"})
-  public complicatedField: string;
+  public complicatedField!: string;
 }
 
 describe("Table Decorator", () => {

@@ -24,13 +24,13 @@ describe("HashPrimaryKey", () => {
     public static readonly primaryKey: Query.HashPrimaryKey<Card, number>;
 
     @AttributeDecorator()
-    public id: number;
+    public id!: number;
 
     @AttributeDecorator()
-    public title: string;
+    public title!: string;
 
     @AttributeDecorator()
-    public count: number;
+    public count!: number;
   }
 
   let primaryKey: HashPrimaryKey<Card, number>;

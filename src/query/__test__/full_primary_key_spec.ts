@@ -24,13 +24,13 @@ describe("FullPrimaryKey", () => {
     public static readonly primaryKey: Query.FullPrimaryKey<Card, number, string>;
 
     @AttributeDecorator()
-    public id: number;
+    public id!: number;
 
     @AttributeDecorator()
-    public title: string;
+    public title!: string;
 
     @AttributeDecorator()
-    public count: number;
+    public count!: number;
   }
 
   let primaryKey: FullPrimaryKey<Card, number, string>;

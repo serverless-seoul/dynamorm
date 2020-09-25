@@ -18,13 +18,13 @@ class Card extends Table {
   public static readonly fullTitleIndex: Query.FullGlobalSecondaryIndex<Card, string, number>;
 
   @Decorator.Attribute()
-  public id: number;
+  public id!: number;
 
   @Decorator.Attribute()
-  public title: string;
+  public title!: string;
 
   @Decorator.Attribute()
-  public count: number;
+  public count!: number;
 }
 
 describe("HashGlobalSecondaryIndex", () => {

@@ -7,7 +7,7 @@ import { Table } from "../../table";
 
 // tslint:disable:max-classes-per-file
 class Card extends Table {
-  public id: number;
+  public id!: number;
 }
 (Card as any).metadata = {
   name: "card",
@@ -25,13 +25,13 @@ class Card extends Table {
 };
 
 class Falsy extends Table {
-  public foo: number;
-  public bar: boolean;
-  public baz: null;
-  public baq: string;
-  public vin: number[];
-  public gle: string[];
-  public qqq: object;
+  public foo!: number;
+  public bar!: boolean;
+  public baz!: null;
+  public baq!: string;
+  public vin!: number[];
+  public gle!: string[];
+  public qqq!: object;
 }
 // tslint:enable:max-classes-per-file
 

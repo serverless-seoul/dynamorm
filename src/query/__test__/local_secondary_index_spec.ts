@@ -64,4 +64,23 @@ describe("LocalSecondaryIndex", () => {
       expect(res.records[1].count).to.eq(3);
     });
   });
+
+  describe("#scanAll", () => {
+    it("should find all items", async () => {
+      await Card.writer.batchPut([
+        Card.create(10, "abc", 1),
+        Card.create(11, "abd", 2),
+        Card.create(12, "abd", 3),
+        Card.create(13, "abd", 4),
+        Card.create(14, "abe", 5),
+        Card.create(15, "abe", 6),
+      ]);
+      const res = await Card.countIndex.scanAll({
+        scanBatchSize: 1,
+        parallelize: 3,
+      });
+
+      expect(res.records.length).to.eq(6);
+    });
+  });
 });

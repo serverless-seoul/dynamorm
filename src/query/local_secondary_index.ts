@@ -7,6 +7,8 @@ import * as Codec from '../codec';
 import * as Metadata from '../metadata';
 import * as Query from './query';
 
+import { scanAll } from './scan_all';
+
 const HASH_KEY_REF = "#hk";
 const HASH_VALUE_REF = ":hkv";
 
@@ -65,6 +67,22 @@ export class LocalSecondaryIndex<T extends Table, HashKeyType, RangeKeyType> {
       scannedCount: result.ScannedCount,
       lastEvaluatedKey: result.LastEvaluatedKey,
       consumedCapacity: result.ConsumedCapacity,
+    };
+  }
+
+  async scanAll(options: {
+    parallelize?: number;
+    scanBatchSize?: number;
+  }) {
+    const res = await scanAll(
+      this.tableClass.metadata.connection.documentClient,
+      this.tableClass.metadata.name,
+      options,
+    );
+
+    return {
+      records: res.map((item) => Codec.deserialize(this.tableClass, item)),
+      count: res.length,
     };
   }
 }

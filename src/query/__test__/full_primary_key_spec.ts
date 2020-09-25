@@ -209,6 +209,77 @@ describe("FullPrimaryKey", () => {
       expect(res.records[1].title).to.eq("abc");
     });
   });
+
+  describe("#scanAll", () => {
+    it("should find all items", async () => {
+      await Card.metadata.connection.documentClient.put({
+        TableName: Card.metadata.name,
+        Item: {
+          id: 10,
+          title: "abc",
+        },
+      }).promise();
+      await Card.metadata.connection.documentClient.put({
+        TableName: Card.metadata.name,
+        Item: {
+          id: 10,
+          title: "abd",
+        },
+      }).promise();
+      await Card.metadata.connection.documentClient.put({
+        TableName: Card.metadata.name,
+        Item: {
+          id: 10,
+          title: "aba",
+        },
+      }).promise();
+
+      const res = await primaryKey.scanAll({});
+
+      expect(res.records.length).to.eq(3);
+    });
+
+    it("should find all items with parallelize", async () => {
+      await Card.metadata.connection.documentClient.put({
+        TableName: Card.metadata.name,
+        Item: {
+          id: 10,
+          title: "abc",
+        },
+      }).promise();
+      await Card.metadata.connection.documentClient.put({
+        TableName: Card.metadata.name,
+        Item: {
+          id: 10,
+          title: "abd",
+        },
+      }).promise();
+      await Card.metadata.connection.documentClient.put({
+        TableName: Card.metadata.name,
+        Item: {
+          id: 10,
+          title: "aba",
+        },
+      }).promise();
+      await Card.metadata.connection.documentClient.put({
+        TableName: Card.metadata.name,
+        Item: {
+          id: 10,
+          title: "ccc",
+        },
+      }).promise();
+
+      const res = await primaryKey.scanAll({ parallelize: 3 });
+
+      expect(res.records.length).to.eq(4);
+      // Ordered by range key since it's "scan"
+      expect(res.records[0].title).to.eq("aba");
+      expect(res.records[1].title).to.eq("abc");
+      expect(res.records[2].title).to.eq("abd");
+      expect(res.records[3].title).to.eq("ccc");
+    });
+  });
+
   describe("#update", () => {
     it("should be able to update items", async () => {
       await primaryKey.update(10, "abc", { count: ["ADD", 1] });

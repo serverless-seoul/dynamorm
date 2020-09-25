@@ -1,4 +1,5 @@
 import { DynamoDB } from 'aws-sdk';
+import * as _ from 'lodash';
 
 import * as Codec from '../codec';
 import * as Metadata from '../metadata';
@@ -6,6 +7,7 @@ import { ITable, Table } from '../table';
 
 import { batchGetFull, batchGetTrim } from "./batch_get";
 import { batchWrite } from "./batch_write";
+import { scanAll } from './scan_all';
 
 export class HashPrimaryKey<T extends Table, HashKeyType> {
   constructor(
@@ -63,6 +65,22 @@ export class HashPrimaryKey<T extends Table, HashKeyType> {
       scannedCount: result.ScannedCount,
       lastEvaluatedKey: result.LastEvaluatedKey,
       consumedCapacity: result.ConsumedCapacity,
+    };
+  }
+
+  async scanAll(options: {
+    parallelize?: number;
+    scanBatchSize?: number;
+  }) {
+    const res = await scanAll(
+      this.tableClass.metadata.connection.documentClient,
+      this.tableClass.metadata.name,
+      options,
+    );
+
+    return {
+      records: res.map((item) => Codec.deserialize(this.tableClass, item)),
+      count: res.length,
     };
   }
 

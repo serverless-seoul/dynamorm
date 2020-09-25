@@ -29,7 +29,7 @@
     "lint": "tslint -c tslint.json 'src/**/*.ts'"
   },
   "engines": {
-    "node": ">=8.10.0"
+    "node": "^12.10.0"
   },
   "author": "Kurt Lee",
   "license": "ISC",
@@ -38,7 +38,7 @@
     "@types/faker": "4.1.12",
     "@types/lodash": "^4.14.161",
     "@types/mocha": "7.0.2",
-    "@types/node": "8.10.64",
+    "@types/node": "12.12.62",
     "@types/reflect-metadata": "^0.1.0",
     "@vingle/commitlint-preset": "1.0.3",
     "@vingle/semantic-release-config": "1.0.5",

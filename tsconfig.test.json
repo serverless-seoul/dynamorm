@@ -1,16 +1,4 @@
 {
-    "compilerOptions": {
-        "module": "commonjs",
-        "target": "es2017",
-        "noImplicitAny": true,
-        "sourceMap": true,
-        "outDir": "dst",
-        "noUnusedLocals": true,
-        "emitDecoratorMetadata": true,
-        "experimentalDecorators": true,
-        "strictNullChecks": true
-    },
-    "include": [
-        "src/**/*"
-    ]
+    "extends": "./tsconfig.json",
+    "exclude": []
 }

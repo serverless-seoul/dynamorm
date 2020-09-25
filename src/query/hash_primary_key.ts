@@ -1,11 +1,15 @@
-import { DynamoDB } from 'aws-sdk';
+import { DynamoDB } from "aws-sdk";
 
-import * as Codec from '../codec';
-import * as Metadata from '../metadata';
-import { ITable, Table } from '../table';
+import * as Codec from "../codec";
+import * as Metadata from "../metadata";
+import { ITable, Table } from "../table";
 
 import { batchGetFull, batchGetTrim } from "./batch_get";
 import { batchWrite } from "./batch_write";
+
+import { Conditions } from "./expressions/conditions";
+import { buildCondition, buildUpdate } from "./expressions/transformers";
+import { UpdateChanges } from "./expressions/update";
 
 export class HashPrimaryKey<T extends Table, HashKeyType> {
   constructor(
@@ -13,16 +17,22 @@ export class HashPrimaryKey<T extends Table, HashKeyType> {
     readonly metadata: Metadata.Indexes.HashPrimaryKeyMetadata,
   ) {}
 
-  async delete(hashKey: HashKeyType) {
-    await this.tableClass.metadata.connection.documentClient.delete({
+  public async delete(
+    hashKey: HashKeyType,
+    options: Partial<{
+      condition: Conditions<T> | Array<Conditions<T>>;
+    }> = {},
+  ) {
+    const res = await this.tableClass.metadata.connection.documentClient.delete({
       TableName: this.tableClass.metadata.name,
       Key: {
         [this.metadata.hash.name]: hashKey,
       },
+      ...buildCondition(this.tableClass.metadata, options.condition),
     }).promise();
   }
 
-  async get(hashKey: HashKeyType, options: { consistent: boolean } = { consistent: false }): Promise<T | null> {
+  public async get(hashKey: HashKeyType, options: { consistent: boolean } = { consistent: false }): Promise<T | null> {
     const dynamoRecord =
       await this.tableClass.metadata.connection.documentClient.get({
         TableName: this.tableClass.metadata.name,
@@ -38,12 +48,12 @@ export class HashPrimaryKey<T extends Table, HashKeyType> {
     }
   }
 
-  async scan(options: {
-    limit?: number;
-    totalSegments?: number;
-    segment?: number;
-    exclusiveStartKey?: DynamoDB.DocumentClient.Key;
-  }) {
+  public async scan(options: {
+    limit?: number,
+    totalSegments?: number,
+    segment?: number,
+    exclusiveStartKey?: DynamoDB.DocumentClient.Key,
+  } = {}) {
     const params: DynamoDB.DocumentClient.ScanInput = {
       TableName: this.tableClass.metadata.name,
       Limit: options.limit,
@@ -66,7 +76,7 @@ export class HashPrimaryKey<T extends Table, HashKeyType> {
     };
   }
 
-  async batchGet(keys: HashKeyType[]) {
+  public async batchGet(keys: HashKeyType[]) {
     const res = await batchGetTrim(
       this.tableClass.metadata.connection.documentClient,
       this.tableClass.metadata.name,
@@ -84,7 +94,7 @@ export class HashPrimaryKey<T extends Table, HashKeyType> {
     };
   }
 
-  async batchGetFull(keys: HashKeyType[]) {
+  public async batchGetFull(keys: HashKeyType[]) {
     const res = await batchGetFull(
       this.tableClass.metadata.connection.documentClient,
       this.tableClass.metadata.name,
@@ -102,7 +112,7 @@ export class HashPrimaryKey<T extends Table, HashKeyType> {
     };
   }
 
-  async batchDelete(keys: HashKeyType[]) {
+  public async batchDelete(keys: HashKeyType[]) {
     return await batchWrite(
       this.tableClass.metadata.connection.documentClient,
       this.tableClass.metadata.name,
@@ -118,34 +128,28 @@ export class HashPrimaryKey<T extends Table, HashKeyType> {
     );
   }
 
-  async update(
+  // Let'just don't use Scan if it's possible
+  // async scan()
+  public async update(
     hashKey: HashKeyType,
-    changes: {
-      [key: string]: [
-        DynamoDB.DocumentClient.AttributeAction,
-        any
-      ];
-    },
+    changes: Partial<UpdateChanges<T>>,
+    options: Partial<{
+      condition: Conditions<T> | Array<Conditions<T>>;
+    }> = {},
   ): Promise<void> {
-    // Select out only declared Attributes
-    const attributeUpdates: DynamoDB.DocumentClient.AttributeUpdates = {};
+    const update = buildUpdate(this.tableClass.metadata, changes);
+    const condition = buildCondition(this.tableClass.metadata, options.condition);
 
-    this.tableClass.metadata.attributes.forEach((attr) => {
-      const change = changes[attr.propertyName];
-      if (change) {
-        attributeUpdates[attr.name] = {
-          Action: change[0],
-          Value: change[1],
-        };
-      }
-    });
-
-    await this.tableClass.metadata.connection.documentClient.update({
-      TableName: this.tableClass.metadata.name,
-      Key: {
-        [this.metadata.hash.name]: hashKey,
-      },
-      AttributeUpdates: attributeUpdates,
-    }).promise();
+    const dynamoRecord =
+      await this.tableClass.metadata.connection.documentClient.update({
+        TableName: this.tableClass.metadata.name,
+        Key: {
+          [this.metadata.hash.name]: hashKey,
+        },
+        UpdateExpression: update.UpdateExpression,
+        ConditionExpression: condition.ConditionExpression,
+        ExpressionAttributeNames: { ...update.ExpressionAttributeNames, ...condition.ExpressionAttributeNames },
+        ExpressionAttributeValues: { ...update.ExpressionAttributeValues, ...condition.ExpressionAttributeValues },
+      }).promise();
   }
 }

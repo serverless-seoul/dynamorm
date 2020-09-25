@@ -1,5 +1,5 @@
-import * as Attribute from './attribute';
-import * as Indexes from './indexes';
+import * as Attribute from "./attribute";
+import * as Indexes from "./indexes";
 
 import * as Connection from "../connections";
 
@@ -31,12 +31,15 @@ export function createMetadata() {
 }
 
 export function validateMetadata(metadata: Metadata) {
-  if (!metadata.name)
-    throw new Error("Name must be proviede for Table");
-  if (!metadata.primaryKey)
+  if (!metadata.name) {
+    throw new Error("Name must be provided for Table");
+  }
+  if (!metadata.primaryKey) {
     throw new Error("Table must have PrimaryKey");
-  if (!metadata.connection)
+  }
+  if (!metadata.connection) {
     throw new Error("Table must have DynamoDB Connection");
+  }
 
   // TTL
   const ttlAttributes = metadata.attributes.filter((attribute) => attribute.timeToLive);

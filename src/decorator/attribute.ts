@@ -1,5 +1,7 @@
-import { Attribute as AttributeMetadata } from '../metadata';
-import { ITable, Table } from '../table';
+import "reflect-metadata";
+
+import { Attribute as AttributeMetadata } from "../metadata";
+import { ITable, Table } from "../table";
 
 // Table Decorator
 export function Attribute<T>(options: { name?: string; timeToLive?: true } = {}) {

@@ -1,14 +1,16 @@
-import { DynamoDB } from 'aws-sdk';
-import * as _ from 'lodash';
+import { DynamoDB } from "aws-sdk";
 
-import { ITable, Table } from '../table';
+import { ITable, Table } from "../table";
 
-import * as Codec from '../codec';
-import * as Metadata from '../metadata';
-import * as Query from './query';
+import * as Codec from "../codec";
+import * as Metadata from "../metadata";
+import * as Query from "./query";
 
 import { batchGetFull, batchGetTrim } from "./batch_get";
 import { batchWrite } from "./batch_write";
+import { Conditions } from "./expressions/conditions";
+import { buildCondition, buildUpdate } from "./expressions/transformers";
+import { UpdateChanges } from "./expressions/update";
 
 const HASH_KEY_REF = "#hk";
 const HASH_VALUE_REF = ":hkv";
@@ -21,14 +23,21 @@ export class FullPrimaryKey<T extends Table, HashKeyType, RangeKeyType> {
     readonly metadata: Metadata.Indexes.FullPrimaryKeyMetadata,
   ) {}
 
-  async delete(hashKey: HashKeyType, sortKey: RangeKeyType) {
-    await this.tableClass.metadata.connection.documentClient.delete({
+  public async delete(
+    hashKey: HashKeyType,
+    sortKey: RangeKeyType,
+    options: Partial<{
+      condition: Conditions<T> | Array<Conditions<T>>;
+    }> = {},
+  ) {
+    const res = await this.tableClass.metadata.connection.documentClient.delete({
       TableName: this.tableClass.metadata.name,
       // ReturnValues: "ALL_OLD",
       Key: {
         [this.metadata.hash.name]: hashKey,
         [this.metadata.range.name]: sortKey,
       },
+      ...buildCondition(this.tableClass.metadata, options.condition),
     }).promise();
   }
 
@@ -37,7 +46,11 @@ export class FullPrimaryKey<T extends Table, HashKeyType, RangeKeyType> {
    * @param sortKey - sortKey
    * @param options - read options. consistent means "strongly consistent" or not
    */
-  async get(hashKey: HashKeyType, sortKey: RangeKeyType, options: { consistent: boolean } = { consistent: false } ): Promise<T | null> {
+  public async get(
+    hashKey: HashKeyType,
+    sortKey: RangeKeyType,
+    options: { consistent: boolean } = { consistent: false },
+  ): Promise<T | null> {
     const dynamoRecord =
       await this.tableClass.metadata.connection.documentClient.get({
         TableName: this.tableClass.metadata.name,
@@ -54,7 +67,7 @@ export class FullPrimaryKey<T extends Table, HashKeyType, RangeKeyType> {
     }
   }
 
-  async batchGet(keys: [HashKeyType, RangeKeyType][]) {
+  public async batchGet(keys: Array<[HashKeyType, RangeKeyType]>) {
     const res = await batchGetTrim(
       this.tableClass.metadata.connection.documentClient,
       this.tableClass.metadata.name,
@@ -73,7 +86,7 @@ export class FullPrimaryKey<T extends Table, HashKeyType, RangeKeyType> {
     };
   }
 
-  async batchGetFull(keys: [HashKeyType, RangeKeyType][]) {
+  public async batchGetFull(keys: Array<[HashKeyType, RangeKeyType]>) {
     const res = await batchGetFull(
       this.tableClass.metadata.connection.documentClient,
       this.tableClass.metadata.name,
@@ -92,7 +105,7 @@ export class FullPrimaryKey<T extends Table, HashKeyType, RangeKeyType> {
     };
   }
 
-  async batchDelete(keys: [HashKeyType, RangeKeyType][]) {
+  public async batchDelete(keys: Array<[HashKeyType, RangeKeyType]>) {
     return await batchWrite(
       this.tableClass.metadata.connection.documentClient,
       this.tableClass.metadata.name,
@@ -109,13 +122,13 @@ export class FullPrimaryKey<T extends Table, HashKeyType, RangeKeyType> {
     );
   }
 
-  async query(options: {
-    hash: HashKeyType;
-    range?: Query.Conditions<RangeKeyType>;
-    rangeOrder?: "ASC" | "DESC";
-    limit?: number;
-    exclusiveStartKey?: DynamoDB.DocumentClient.Key;
-    consistent?: boolean;
+  public async query(options: {
+    hash: HashKeyType,
+    range?: Query.Conditions<RangeKeyType>,
+    rangeOrder?: "ASC" | "DESC",
+    limit?: number,
+    exclusiveStartKey?: DynamoDB.DocumentClient.Key,
+    consistent?: boolean,
   }) {
     if (!options.rangeOrder) {
       options.rangeOrder = "ASC";
@@ -158,12 +171,12 @@ export class FullPrimaryKey<T extends Table, HashKeyType, RangeKeyType> {
     };
   }
 
-  async scan(options: {
-    limit?: number;
-    totalSegments?: number;
-    segment?: number;
-    exclusiveStartKey?: DynamoDB.DocumentClient.Key;
-  }) {
+  public async scan(options: {
+    limit?: number,
+    totalSegments?: number,
+    segment?: number,
+    exclusiveStartKey?: DynamoDB.DocumentClient.Key,
+  } = {}) {
     const params: DynamoDB.DocumentClient.ScanInput = {
       TableName: this.tableClass.metadata.name,
       Limit: options.limit,
@@ -186,35 +199,28 @@ export class FullPrimaryKey<T extends Table, HashKeyType, RangeKeyType> {
     };
   }
 
-  async update(
+  public async update(
     hashKey: HashKeyType,
     sortKey: RangeKeyType,
-    changes: {
-      [key: string]: [
-        DynamoDB.DocumentClient.AttributeAction,
-        any
-      ];
-    },
+    changes: Partial<UpdateChanges<T>>,
+    options: Partial<{
+      condition: Conditions<T> | Array<Conditions<T>>;
+    }> = {},
   ): Promise<void> {
-    const attributeUpdates: DynamoDB.DocumentClient.AttributeUpdates = {};
+    const update = buildUpdate(this.tableClass.metadata, changes);
+    const condition = buildCondition(this.tableClass.metadata, options.condition);
 
-    this.tableClass.metadata.attributes.forEach((attr) => {
-      const change = changes[attr.propertyName];
-      if (change) {
-        attributeUpdates[attr.name] = {
-          Action: change[0],
-          Value: change[1],
-        };
-      }
-    });
-
-    await this.tableClass.metadata.connection.documentClient.update({
-      TableName: this.tableClass.metadata.name,
-      Key: {
-        [this.metadata.hash.name]: hashKey,
-        [this.metadata.range.name]: sortKey,
-      },
-      AttributeUpdates: attributeUpdates,
-    }).promise();
+    const dynamoRecord =
+      await this.tableClass.metadata.connection.documentClient.update({
+        TableName: this.tableClass.metadata.name,
+        Key: {
+          [this.metadata.hash.name]: hashKey,
+          [this.metadata.range.name]: sortKey,
+        },
+        UpdateExpression: update.UpdateExpression,
+        ConditionExpression: condition.ConditionExpression,
+        ExpressionAttributeNames: { ...update.ExpressionAttributeNames, ...condition.ExpressionAttributeNames },
+        ExpressionAttributeValues: { ...update.ExpressionAttributeValues, ...condition.ExpressionAttributeValues },
+      }).promise();
   }
 }

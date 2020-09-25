@@ -1,8 +1,7 @@
 import { Connection, DynamoDBConnection } from "./connections";
 
 export default class Config {
-  // tslint:disable-next-line: variable-name
-  private static __defaultConnection: Connection;
+  private static __defaultConnection: Connection; // tslint:disable-line
   public static get defaultConnection() {
     if (!this.__defaultConnection) {
       this.__defaultConnection = new DynamoDBConnection({

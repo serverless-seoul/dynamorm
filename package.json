@@ -1,59 +1,70 @@
 {
-  "name": "@serverless-seoul/dynamorm",
-  "version": "1.0.0",
-  "description": "AWS DynamoDB ORM for Typescript",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/serverless-seoul/dynamorm.git"
-  },
-  "keywords": [
-    "DynamoDB",
-    "AWS",
-    "Typescript",
-    "ORM",
-    "Serverless"
-  ],
-  "bugs": {
-    "url": "https://github.com/serverless-seoul/dynamorm/issues"
-  },
-  "homepage": "https://github.com/serverless-seoul/dynamorm",
+  "name": "dynamo-types",
+  "version": "2.10.1",
+  "description": "DynamoDB ORM for Typescript",
   "main": "./dst/index.js",
   "typings": "./dst/index.d.ts",
   "scripts": {
-    "build": "check-engine && rm -Rf dst && tsc -d && cd src && find . -name '*.json' -type f -exec cp {} ../dst/{} \\; && cd ..",
-    "pretest": "rm -Rf dst && tsc -p ./tsconfig.test.json && cd src && find . -name '*.json' -type f -exec cp {} ../dst/{} \\; && cd ..",
-    "test": "AWS_REGION=us-east-1 AWS_ACCESS_KEY_ID=mock AWS_SECRET_ACCESS_KEY=mock mocha -t 20000 dst/**/__test__/**/*.js",
-    "test:ci": "npm run test -- --forbid-only",
-    "prepublish": "npm run build",
-    "ci:publish": "publish",
+    "prebuild": "check-engine && rm -rf dst",
+    "build": "tsc",
+    "postbuild": "cd src && find . -name '*.json' -type f -exec cp {} ../dst/{} \\; && cd ..",
+    "pretest": "npm run build -- -p ./tsconfig.test.json",
+    "test": "env AWS_REGION=us-east-1 AWS_ACCESS_KEY_ID=mock AWS_SECRET_ACCESS_KEY=mock mocha -t 20000 dst/**/__test__/**/*.js",
+    "test:local": "env DYNAMO_TYPES_ENDPOINT=http://127.0.0.1:8000 npm test",
+    "prepublishOnly": "npm run build",
     "lint": "tslint -c tslint.json 'src/**/*.ts'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/balmbees/dynamo-types.git"
   },
   "engines": {
     "node": ">=8.10.0"
   },
   "author": "Kurt Lee",
   "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/balmbees/dynamo-types/issues"
+  },
+  "homepage": "https://github.com/balmbees/dynamo-types#readme",
   "devDependencies": {
-    "@types/chai": "4.1.7",
-    "@types/faker": "^4.1.0",
-    "@types/mocha": "2.2.48",
-    "@types/node": "6.0.52",
-    "@vingle/tslint-preset": "^2.0.0",
+    "@types/chai": "4.2.12",
+    "@types/faker": "4.1.12",
+    "@types/lodash": "4.14.161",
+    "@types/mocha": "7.0.2",
+    "@types/node": "8.10.64",
+    "@types/reflect-metadata": "0.1.0",
+    "@vingle/commitlint-preset": "1.0.3",
+    "@vingle/semantic-release-config": "1.0.5",
+    "@vingle/tslint-preset": "1.0.1",
     "chai": "4.2.0",
-    "check-engine": "^1.8.0",
-    "faker": "^4.1.0",
-    "mocha": "3.5.3",
-    "publish": "^0.6.0",
-    "tslint": "^6.1.2",
-    "typescript": "3.5.2"
+    "check-engine": "1.8.1",
+    "faker": "4.1.0",
+    "husky": "4.3.0",
+    "mocha": "7.2.0",
+    "tslint": "5.20.1",
+    "typescript": "3.9.7"
   },
   "dependencies": {
-    "@types/lodash": "^4.14.71",
-    "@types/reflect-metadata": "0.0.5",
-    "amazon-dax-client": "^1.1.4",
-    "aws-sdk": ">=2.100.0",
-    "aws-xray-sdk-core": "^1.1.3",
-    "lodash": "^4.17.13",
-    "reflect-metadata": "^0.1.10"
+    "amazon-dax-client": "^1.2.2",
+    "aws-sdk": "^2.538.0",
+    "aws-xray-sdk-core": "^2.3.6",
+    "lodash": "^4.17.15",
+    "reflect-metadata": "^0.1.13"
+  },
+  "config": {
+    "commitizen": {
+      "path": "cz-conventional-changelog"
+    }
+  },
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+    }
+  },
+  "commitlint": {
+    "extends": [
+      "@vingle/commitlint-preset"
+    ]
   }
 }

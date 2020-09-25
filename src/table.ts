@@ -1,64 +1,72 @@
-// Base Table
+import * as _ from "lodash";
+
 import * as Metadata from "./metadata";
 import * as Query from "./query";
-
-import * as _ from "lodash";
+import { Conditions } from "./query/expressions/conditions";
 
 export class Table {
   // This will be setted by Decorator
-  static get metadata() {
+  public static get metadata() {
     if (!(this as any).__metadata) {
       (this as any).__metadata = Metadata.Table.createMetadata();
     }
     return (this as any).__metadata as Metadata.Table.Metadata;
   }
-  static set metadata(metadata: Metadata.Table.Metadata) {
+  public static set metadata(metadata: Metadata.Table.Metadata) {
     (this as any).__metadata = metadata;
   }
 
   // Table Operations
-  static async createTable() {
+  public static async createTable() {
     await Query.TableOperations.createTable(this.metadata);
   }
-  static async dropTable() {
+  public static async dropTable() {
     await Query.TableOperations.dropTable(this.metadata);
   }
 
   // raw storage for all attributes this record (instance) has
-  // tslint:disable-next-line: variable-name
-  private attributes: { [key: string]: any } = {};
+  private __attributes: { [key: string]: any } = {}; // tslint:disable-line
+
+  private __writer: Query.Writer<Table>; // tslint:disable-line
+
+  public getAttribute(name: string) {
+    return this.__attributes[name];
+  }
 
   // Those are pretty much "Private". don't use it if its possible
-  setAttribute(name: string, value: any) {
+  public setAttribute(name: string, value: any) {
     // Do validation with Attribute metadata maybe
     this.attributes[name] = value;
   }
-  getAttribute(name: string) {
-    return this.attributes[name];
-  }
-  setAttributes(attributes: { [name: string]: any }) {
+
+  public setAttributes(attributes: { [name: string]: any }) {
     _.forEach(attributes, (value, name) => {
       this.setAttribute(name, value);
     });
   }
-
-  // tslint:disable-next-line: variable-name
-  private __writer: Query.Writer<Table> | undefined = undefined;
-  private get writer(): Query.Writer<Table> {
+  private get writer() {
     if (!this.__writer) {
       this.__writer = new Query.Writer(this.constructor as ITable<Table>);
     }
     return this.__writer;
   }
-
-  public async save() {
-    return await this.writer.put(this);
+  public async save<T extends Table>(
+    this: T,
+    options?: Partial<{
+      condition?: Conditions<T> | Array<Conditions<T>>;
+    }>,
+  ) {
+    return await this.writer.put(this, options);
   }
-  public async delete() {
-    return await this.writer.delete(this);
+  public async delete<T extends Table>(
+    this: T,
+    options?: Partial<{
+      condition?: Conditions<T> | Array<Conditions<T>>;
+    }>,
+  ) {
+    return await this.writer.delete(this, options);
   }
-
-  serialize() {
+  public serialize() {
     // TODO some serialization logic
     return this.attributes;
   }

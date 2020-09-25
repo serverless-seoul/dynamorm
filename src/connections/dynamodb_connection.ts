@@ -7,11 +7,16 @@ import * as HTTP from "http";
 import * as HTTPS from "https";
 
 export class DynamoDBConnection implements Connection {
+  private __documentClient: AWS.DynamoDB.DocumentClient; // tslint:disable-line
+  private __client: AWS.DynamoDB; // tslint:disable-line
+
   constructor(options: {
+    region?: string;
     endpoint: string | undefined;
     enableAWSXray: boolean;
   }) {
-    const dynamoDBOptions = {
+    const dynamoDBOptions: DynamoDB.ClientConfiguration = {
+      region: options.region,
       endpoint: options.endpoint,
       httpOptions: {
         agent: this.httpAgent(options.endpoint),
@@ -48,6 +53,11 @@ export class DynamoDBConnection implements Connection {
     }
   }
 
-  public readonly documentClient: AWS.DynamoDB.DocumentClient;
-  public readonly client: AWS.DynamoDB;
+  public get documentClient() {
+    return this.__documentClient;
+  }
+
+  public get client() {
+    return this.__client;
+  }
 }

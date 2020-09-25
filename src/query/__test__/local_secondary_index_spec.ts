@@ -1,13 +1,23 @@
-import { expect } from 'chai';
+import { expect } from "chai";
 
-import * as Query from '../index';
+import { Table } from "../../table";
 
-import * as Decorator from '../../decorator';
-import { Table } from '../../table';
+import * as Decorator from "../../decorator";
+
+import * as Query from "../index";
 
 @Decorator.Table({ name: "prod-Card-3" })
 class Card extends Table {
-  static create(id: number, title: string, count: number) {
+  @Decorator.FullPrimaryKey("id", "title")
+  public static readonly primaryKey: Query.FullPrimaryKey<Card, number, string>;
+
+  @Decorator.LocalSecondaryIndex("count")
+  public static readonly countIndex: Query.LocalSecondaryIndex<Card, number, number>;
+
+  @Decorator.Writer()
+  public static readonly writer: Query.Writer<Card>;
+
+  public static create(id: number, title: string, count: number) {
     const record = new this();
     record.id = id;
     record.title = title;
@@ -23,19 +33,10 @@ class Card extends Table {
 
   @Decorator.Attribute()
   public count: number;
-
-  @Decorator.FullPrimaryKey('id', 'title')
-  static readonly primaryKey: Query.FullPrimaryKey<Card, number, string>;
-
-  @Decorator.LocalSecondaryIndex('count')
-  static readonly countIndex: Query.LocalSecondaryIndex<Card, number, number>;
-
-  @Decorator.Writer()
-  static readonly writer: Query.Writer<Card>;
 }
 
 describe("LocalSecondaryIndex", () => {
-  beforeEach(async() => {
+  beforeEach(async () => {
     await Card.createTable();
   });
 

@@ -10,17 +10,21 @@ export async function batchWrite(
   requests: DynamoDB.DocumentClient.WriteRequest[],
 ) {
   try {
-    await Promise.all(
+    const results = await Promise.all(
       _.chunk(requests, MAX_ITEMS)
-        .map(async (chunk) => await documentClient.batchWrite({
-          RequestItems: {
-            [tableName]: chunk,
-          },
-        }).promise()),
+        .map(async (chunk) => {
+          const res =
+            await documentClient.batchWrite({
+              RequestItems: {
+                [tableName]: chunk,
+              },
+            }).promise();
+          return res;
+        }),
     );
   } catch (e) {
-    // tslint:disable-next-line: no-console
-    console.log(`Dynamorm batchWrite - ${JSON.stringify(requests, null, 2)}`);
+    // tslint:disable-next-line
+    console.log(`Dynamo-Types batchWrite - ${JSON.stringify(requests, null, 2)}`);
     throw e;
   }
 }

@@ -11,8 +11,8 @@ export interface Metadata {
   name: string; // name of the table on DynamoDB
   attributes: Attribute.Metadata[]; // List of attributes this table has
   connection: Connection.Connection; // DynamoDB Database Connection
-  globalSecondaryIndexes: (Indexes.FullGlobalSecondaryIndexMetadata
-    | Indexes.HashGlobalSecondaryIndexMetadata)[];
+  globalSecondaryIndexes: Array<Indexes.FullGlobalSecondaryIndexMetadata
+    | Indexes.HashGlobalSecondaryIndexMetadata>;
   localSecondaryIndexes: Indexes.LocalSecondaryIndexMetadata[];
   // Default Index, which every table must have
   primaryKey: (

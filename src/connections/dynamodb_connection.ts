@@ -7,8 +7,8 @@ import * as HTTP from "http";
 import * as HTTPS from "https";
 
 export class DynamoDBConnection implements Connection {
-  private __documentClient: AWS.DynamoDB.DocumentClient; // tslint:disable-line
-  private __client: AWS.DynamoDB; // tslint:disable-line
+  public readonly documentClient: AWS.DynamoDB.DocumentClient; // tslint:disable-line
+  public readonly client: AWS.DynamoDB; // tslint:disable-line
 
   constructor(options: {
     region?: string;
@@ -51,13 +51,5 @@ export class DynamoDBConnection implements Connection {
         keepAlive: true,
       });
     }
-  }
-
-  public get documentClient() {
-    return this.__documentClient;
-  }
-
-  public get client() {
-    return this.__client;
   }
 }

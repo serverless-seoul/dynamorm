@@ -1,9 +1,6 @@
 import * as Query from "../query";
 import { ITable } from "../table";
 
-import * as Query from '../query';
-import { ITable } from '../table';
-
 // Writer is pretty much "Helper" method.
 // You can still create writer without this decorator,
 // but it seems pretty clear people would need writer for most of classes anyway

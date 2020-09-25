@@ -137,7 +137,7 @@ export async function createTable(metadata: Metadata.Table.Metadata) {
             };
           }
         }) : undefined,
-    BillingMode: "PAY_PER_REQUEST"
+    BillingMode: "PAY_PER_REQUEST",
     // StreamSpecification?: StreamSpecification;
   };
 

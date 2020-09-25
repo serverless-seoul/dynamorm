@@ -23,7 +23,7 @@ export class HashPrimaryKey<T extends Table, HashKeyType> {
       condition: Conditions<T> | Array<Conditions<T>>;
     }> = {},
   ) {
-    const res = await this.tableClass.metadata.connection.documentClient.delete({
+    await this.tableClass.metadata.connection.documentClient.delete({
       TableName: this.tableClass.metadata.name,
       Key: {
         [this.metadata.hash.name]: hashKey,
@@ -140,16 +140,15 @@ export class HashPrimaryKey<T extends Table, HashKeyType> {
     const update = buildUpdate(this.tableClass.metadata, changes);
     const condition = buildCondition(this.tableClass.metadata, options.condition);
 
-    const dynamoRecord =
-      await this.tableClass.metadata.connection.documentClient.update({
-        TableName: this.tableClass.metadata.name,
-        Key: {
-          [this.metadata.hash.name]: hashKey,
-        },
-        UpdateExpression: update.UpdateExpression,
-        ConditionExpression: condition.ConditionExpression,
-        ExpressionAttributeNames: { ...update.ExpressionAttributeNames, ...condition.ExpressionAttributeNames },
-        ExpressionAttributeValues: { ...update.ExpressionAttributeValues, ...condition.ExpressionAttributeValues },
-      }).promise();
+    await this.tableClass.metadata.connection.documentClient.update({
+      TableName: this.tableClass.metadata.name,
+      Key: {
+        [this.metadata.hash.name]: hashKey,
+      },
+      UpdateExpression: update.UpdateExpression,
+      ConditionExpression: condition.ConditionExpression,
+      ExpressionAttributeNames: { ...update.ExpressionAttributeNames, ...condition.ExpressionAttributeNames },
+      ExpressionAttributeValues: { ...update.ExpressionAttributeValues, ...condition.ExpressionAttributeValues },
+    }).promise();
   }
 }

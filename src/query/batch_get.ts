@@ -68,13 +68,3 @@ export async function batchGetTrim(
 ) {
   return _.compact(await __batchGet(documentClient, tableName, keys));
 }
-
-function removeFalsyFilter<T>(array: Array<T | undefined>) {
-  const res: T[] = [];
-  array.forEach((item) => {
-    if (!!item) {
-      res.push(item);
-    }
-  });
-  return res;
-}

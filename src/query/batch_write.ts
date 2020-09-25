@@ -10,7 +10,7 @@ export async function batchWrite(
   requests: DynamoDB.DocumentClient.WriteRequest[],
 ) {
   try {
-    const results = await Promise.all(
+    return await Promise.all(
       _.chunk(requests, MAX_ITEMS)
         .map(async (chunk) => {
           const res =

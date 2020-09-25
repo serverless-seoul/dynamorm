@@ -25,12 +25,12 @@ export class Table {
   }
 
   // raw storage for all attributes this record (instance) has
-  private __attributes: { [key: string]: any } = {}; // tslint:disable-line
+  private attributes: { [key: string]: any } = {}; // tslint:disable-line
 
-  private __writer: Query.Writer<Table>; // tslint:disable-line
+  private __writer: Query.Writer<Table> | null = null; // tslint:disable-line
 
   public getAttribute(name: string) {
-    return this.__attributes[name];
+    return this.attributes[name];
   }
 
   // Those are pretty much "Private". don't use it if its possible
@@ -44,12 +44,14 @@ export class Table {
       this.setAttribute(name, value);
     });
   }
-  private get writer() {
+
+  private get writer(): Query.Writer<Table> {
     if (!this.__writer) {
       this.__writer = new Query.Writer(this.constructor as ITable<Table>);
     }
     return this.__writer;
   }
+
   public async save<T extends Table>(
     this: T,
     options?: Partial<{

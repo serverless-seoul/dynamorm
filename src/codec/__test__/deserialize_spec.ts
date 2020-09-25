@@ -1,13 +1,13 @@
-import * as chai from 'chai';
-const expect = chai.expect;
+import { expect } from "chai";
 
-import * as Metadata from '../../metadata';
-import { deserialize, unmarshal } from '../deserialize';
+import * as Metadata from "../../metadata";
+import { deserialize, unmarshal } from "../deserialize";
 
-import { Table } from '../../table';
+import { Table } from "../../table";
 
+// tslint:disable:max-classes-per-file
 class Card extends Table {
-  public id: number;
+  public id!: number;
 }
 (Card as any).metadata = {
   name: "card",
@@ -25,15 +25,16 @@ class Card extends Table {
 };
 
 class Falsy extends Table {
-  public foo: number;
-  public bar: boolean;
-  public baz: null;
-  public baq: string;
-  public vin: number[];
-  public gle: string[];
-  // tslint:disable-next-line: ban-types
-  public qqq: Object;
+  public foo!: number;
+  public bar!: boolean;
+  public baz!: null;
+  public baq!: string;
+  public vin!: number[];
+  public gle!: string[];
+  public qqq!: object;
 }
+// tslint:enable:max-classes-per-file
+
 (Falsy as any).metadata = {
   name: "falsy",
   attributes: [{

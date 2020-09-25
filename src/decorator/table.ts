@@ -1,9 +1,9 @@
-import * as Metadata from '../metadata';
-import * as Query from '../query';
-import { ITable, Table as TableClass } from '../table';
+import * as Metadata from "../metadata";
+import * as Query from "../query";
+import { ITable, Table as TableClass } from "../table";
 
-import Config from '../config';
-import { Connection } from '../connections';
+import Config from "../config";
+import { Connection } from "../connections";
 
 // Table Decorator
 export function Table(options: { name?: string; connection?: Connection } = {}) {
@@ -32,10 +32,10 @@ function defineAttributeProperties(table: ITable<any>) {
       {
         configurable: true,
         enumerable: true,
-        get(this:TableClass) {
+        get(this: TableClass) {
           return this.getAttribute(attr.name);
         },
-        set(this:TableClass, v) {
+        set(this: TableClass, v) {
           this.setAttribute(attr.name, v);
         },
       },
@@ -45,7 +45,7 @@ function defineAttributeProperties(table: ITable<any>) {
 
 function defineGlobalSecondaryIndexes(table: ITable<any>) {
   table.metadata.globalSecondaryIndexes.forEach((metadata) => {
-    if (metadata.type === 'HASH') {
+    if (metadata.type === "HASH") {
       Object.defineProperty(
         table,
         metadata.propertyName,

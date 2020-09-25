@@ -9,7 +9,8 @@ const MAX_ITEMS = 100;
  * @param documentClient
  * @param tableName
  * @param keys
- * @param trimMissing - when given key doesn't have matching record, return "undefined" for index? or just remove itdefault is true
+ * @param trimMissing - when given key doesn't have matching record,
+ * return "undefined" for index? or just remove it (default is true)
  */
 export async function __batchGet(
   documentClient: DynamoDB.DocumentClient,
@@ -19,21 +20,21 @@ export async function __batchGet(
   try {
     return await Promise.all(
       _.chunk(keys, MAX_ITEMS)
-        .map(async (keysChunk) => {
+        .map(async (chunkedKeys) => {
           const res =
             await documentClient.batchGet({
               RequestItems: {
                 [tableName]: {
-                  Keys: keysChunk,
+                  Keys: chunkedKeys,
                 },
               },
             }).promise();
 
           const records = res.Responses![tableName]!;
 
-          return keysChunk.map((key) => {
+          return chunkedKeys.map((key) => {
             return records.find((record) => {
-              for (const keyName in key) {
+              for (const keyName of Object.keys(key)) {
                 if (record[keyName] !== key[keyName]) {
                   return false;
                 }
@@ -46,12 +47,11 @@ export async function __batchGet(
       return _.flatten(chunks);
     });
   } catch (e) {
-    // tslint:disable-next-line: no-console
-    console.log(`Dynamorm batchGet - ${JSON.stringify(keys, null, 2)}`);
+    // tslint:disable-next-line
+    console.log(`Dynamo-Types batchGet - ${JSON.stringify(keys, null, 2)}`);
     throw e;
   }
 }
-
 
 export async function batchGetFull(
   documentClient: DynamoDB.DocumentClient,

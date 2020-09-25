@@ -1,32 +1,30 @@
-import * as chai from 'chai';
-const expect = chai.expect;
+import { expect } from "chai";
 
-import { Attribute as AttributeDecorator } from '../attribute';
-import { FullPrimaryKey as FullPrimaryKeyDecorator } from '../full_primary_key';
-import { Table as TableDecorator } from '../table';
-import { Writer as WriterDecorator } from '../writer';
+import { Attribute as AttributeDecorator } from "../attribute";
+import { FullPrimaryKey as FullPrimaryKeyDecorator } from "../full_primary_key";
+import { Table as TableDecorator } from "../table";
+import { Writer as WriterDecorator } from "../writer";
 
-import * as Query from '../../query';
+import * as Query from "../../query";
 
-
-import { Table } from '../../table';
+import { Table } from "../../table";
 
 @TableDecorator({ name: "prod-Card1" })
 class Card extends Table {
-  @AttributeDecorator()
-  public id: number;
-
-  @AttributeDecorator()
-  public title: string;
-
-  @AttributeDecorator({ name: "complicated_field"})
-  public complicatedField: string;
-
-  @FullPrimaryKeyDecorator('id', 'title')
-  static readonly primaryKey: Query.FullPrimaryKey<Card, number, string>;
+  @FullPrimaryKeyDecorator("id", "title")
+  public static readonly primaryKey: Query.FullPrimaryKey<Card, number, string>;
 
   @WriterDecorator()
-  static readonly writer: Query.Writer<Card>;
+  public static readonly writer: Query.Writer<Card>;
+
+  @AttributeDecorator()
+  public id!: number;
+
+  @AttributeDecorator()
+  public title!: string;
+
+  @AttributeDecorator({ name: "complicated_field"})
+  public complicatedField!: string;
 }
 
 describe("Table Decorator", () => {

@@ -1,13 +1,13 @@
-import { DynamoDB } from 'aws-sdk';
-import * as Attribute from '../metadata/attribute';
+import { DynamoDB } from "aws-sdk";
+import * as Attribute from "../metadata/attribute";
 
-import * as _ from 'lodash';
+import * as _ from "lodash";
 
 // It extracts value with type, such as 'S"
 export function parse(v: DynamoDB.AttributeValue) {
   if (v.B !== undefined) {
     // Buffer|Uint8Array|Blob|string;
-    if (typeof v.B !== 'string') {
+    if (typeof v.B !== "string") {
       throw new Error("DynamoTypes doesn't support B attribute that is not string");
     }
     return { value: v.B, type: Attribute.Type.Buffer };

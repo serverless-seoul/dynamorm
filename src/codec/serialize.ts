@@ -1,7 +1,7 @@
-import { ITable, Table } from '../table';
+import { ITable, Table } from "../table";
 
-export function serialize<T extends Table>(tableClass: ITable<T>, record: T): { [key:string]: any } {
-  const res: { [key:string]: any } = {};
+export function serialize<T extends Table>(tableClass: ITable<T>, record: T): { [key: string]: any } {
+  const res: { [key: string]: any } = {};
 
   tableClass.metadata.attributes.forEach((attributeMetadata) => {
     const attr = record.getAttribute(attributeMetadata.name);

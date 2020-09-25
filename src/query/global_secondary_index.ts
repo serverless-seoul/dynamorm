@@ -1,30 +1,30 @@
-import { DynamoDB } from 'aws-sdk';
-import * as _ from 'lodash';
+import { DynamoDB } from "aws-sdk";
 
-import { ITable, Table } from '../table';
+import { ITable, Table } from "../table";
 
-import * as Codec from '../codec';
-import * as Metadata from '../metadata';
-import * as Query from './query';
+import * as Codec from "../codec";
+import * as Metadata from "../metadata";
+import * as Query from "./query";
 
 const HASH_KEY_REF = "#hk";
 const HASH_VALUE_REF = ":hkv";
 
 const RANGE_KEY_REF = "#rk";
 
+// tslint:disable:max-classes-per-file
 export class FullGlobalSecondaryIndex<T extends Table, HashKeyType, RangeKeyType> {
   constructor(
     readonly tableClass: ITable<T>,
     readonly metadata: Metadata.Indexes.FullGlobalSecondaryIndexMetadata,
   ) {}
 
-  async query(options: {
-    hash: HashKeyType;
-    range?: Query.Conditions<RangeKeyType>;
-    rangeOrder?: "ASC" | "DESC";
-    limit?: number;
-    exclusiveStartKey?: DynamoDB.DocumentClient.Key;
-    consistent?: boolean;
+  public async query(options: {
+    hash: HashKeyType,
+    range?: Query.Conditions<RangeKeyType>,
+    rangeOrder?: "ASC" | "DESC",
+    limit?: number,
+    exclusiveStartKey?: DynamoDB.DocumentClient.Key,
+    consistent?: boolean,
   }) {
     if (!options.rangeOrder) {
       options.rangeOrder = "ASC";
@@ -67,6 +67,35 @@ export class FullGlobalSecondaryIndex<T extends Table, HashKeyType, RangeKeyType
       consumedCapacity: result.ConsumedCapacity,
     };
   }
+
+  public async scan(options: {
+    limit?: number,
+    totalSegments?: number,
+    segment?: number,
+    exclusiveStartKey?: DynamoDB.DocumentClient.Key,
+  } = {}) {
+    const params: DynamoDB.DocumentClient.ScanInput = {
+      TableName: this.tableClass.metadata.name,
+      IndexName: this.metadata.name,
+      Limit: options.limit,
+      ExclusiveStartKey: options.exclusiveStartKey,
+      ReturnConsumedCapacity: "TOTAL",
+      TotalSegments: options.totalSegments,
+      Segment: options.segment,
+    };
+
+    const result = await this.tableClass.metadata.connection.documentClient.scan(params).promise();
+
+    return {
+      records: (result.Items || []).map((item) => {
+        return Codec.deserialize(this.tableClass, item);
+      }),
+      count: result.Count,
+      scannedCount: result.ScannedCount,
+      lastEvaluatedKey: result.LastEvaluatedKey,
+      consumedCapacity: result.ConsumedCapacity,
+    };
+  }
 }
 
 export class HashGlobalSecondaryIndex<T extends Table, HashKeyType> {
@@ -75,7 +104,7 @@ export class HashGlobalSecondaryIndex<T extends Table, HashKeyType> {
     readonly metadata: Metadata.Indexes.HashGlobalSecondaryIndexMetadata,
   ) {}
 
-  async query(hash: HashKeyType, options: { limit?: number; consistent?: boolean } = {}) {
+  public async query(hash: HashKeyType, options: { limit?: number, consistent?: boolean } = {}) {
     const params: DynamoDB.DocumentClient.QueryInput = {
       TableName: this.tableClass.metadata.name,
       IndexName: this.metadata.name,
@@ -103,4 +132,34 @@ export class HashGlobalSecondaryIndex<T extends Table, HashKeyType> {
       consumedCapacity: result.ConsumedCapacity,
     };
   }
+
+  public async scan(options: {
+    limit?: number,
+    totalSegments?: number,
+    segment?: number,
+    exclusiveStartKey?: DynamoDB.DocumentClient.Key,
+  } = {}) {
+    const params: DynamoDB.DocumentClient.ScanInput = {
+      TableName: this.tableClass.metadata.name,
+      IndexName: this.metadata.name,
+      Limit: options.limit,
+      ExclusiveStartKey: options.exclusiveStartKey,
+      ReturnConsumedCapacity: "TOTAL",
+      TotalSegments: options.totalSegments,
+      Segment: options.segment,
+    };
+
+    const result = await this.tableClass.metadata.connection.documentClient.scan(params).promise();
+
+    return {
+      records: (result.Items || []).map((item) => {
+        return Codec.deserialize(this.tableClass, item);
+      }),
+      count: result.Count,
+      scannedCount: result.ScannedCount,
+      lastEvaluatedKey: result.LastEvaluatedKey,
+      consumedCapacity: result.ConsumedCapacity,
+    };
+  }
 }
+// tslint:enable:max-classes-per-file

@@ -1,9 +1,11 @@
 {
     "compilerOptions": {
         "module": "commonjs",
-        "target": "es2017",
+        "target": "es2019",
         "noImplicitAny": true,
         "sourceMap": true,
+        "declaration": true,
+        "rootDir": "src",
         "outDir": "dst",
         "noUnusedLocals": true,
         "emitDecoratorMetadata": true,

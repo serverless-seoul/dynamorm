@@ -1,38 +1,41 @@
-import { expect } from 'chai';
+import { expect } from "chai";
+import { toJS } from "../../__test__/helper";
 
-import * as Metadata from '../../metadata';
-import { Table } from '../../table';
+import * as Metadata from "../../metadata";
+import { Table } from "../../table";
 
-import { FullPrimaryKey } from '../full_primary_key';
+import { FullPrimaryKey } from "../full_primary_key";
+
+import { AttributeExists, AttributeNotExists, BeginsWith, Contains, GreaterThan } from "../expressions/conditions";
 
 import {
   Attribute as AttributeDecorator,
   FullPrimaryKey as FullPrimaryKeyDecorator,
   Table as TableDecorator,
-} from '../../decorator';
+} from "../../decorator";
 
-import * as Query from '../index';
+import * as Query from "../index";
 
 describe("FullPrimaryKey", () => {
 
   @TableDecorator({ name: "prod-Card2" })
   class Card extends Table {
-    @AttributeDecorator()
-    public id: number;
+    @FullPrimaryKeyDecorator("id", "title")
+    public static readonly primaryKey: Query.FullPrimaryKey<Card, number, string>;
 
     @AttributeDecorator()
-    public title: string;
+    public id!: number;
 
     @AttributeDecorator()
-    public count: number;
+    public title!: string;
 
-    @FullPrimaryKeyDecorator('id', 'title')
-    static readonly primaryKey: Query.FullPrimaryKey<Card, number, string>;
+    @AttributeDecorator()
+    public count!: number;
   }
 
   let primaryKey: FullPrimaryKey<Card, number, string>;
 
-  beforeEach(async() => {
+  beforeEach(async () => {
     await Card.createTable();
 
     primaryKey = new FullPrimaryKey<Card, number, string>(
@@ -46,25 +49,56 @@ describe("FullPrimaryKey", () => {
   });
 
   describe("#delete", async () => {
-    it("should delete item if exist", async () => {
+    beforeEach(async () => {
       await Card.metadata.connection.documentClient.put({
         TableName: Card.metadata.name,
         Item: {
           id: 10,
           title: "abc",
+          count: 100,
         },
       }).promise();
+    });
 
+    it("should delete item if exist", async () => {
       await primaryKey.delete(10, "abc");
 
-      expect(await primaryKey.get(10, "abc")).to.be.eq(null);
+      expect(await primaryKey.get(10, "abc")).to.eq(null);
+    });
+
+    context("when condition check was failed", () => {
+      it("should throw error", async () => {
+        const [ e ] = await toJS(primaryKey.delete(10, "abc", {
+          condition: { count: GreaterThan(10000) },
+        }));
+
+        expect(e).to.be.instanceOf(Error)
+          .with.property("name", "ConditionalCheckFailedException");
+
+        expect(e).to.have.property("message", "The conditional request failed");
+
+        expect(await primaryKey.get(10, "abc")).not.to.eq(null);
+      });
+    });
+
+    context("when condition check was passed", () => {
+      it("should delete item as per provided condition", async () => {
+        await primaryKey.delete(10, "abc", {
+          condition: [
+            { title: BeginsWith("ab"), count: GreaterThan(10) },
+            { id: AttributeNotExists() },
+          ],
+        });
+
+        expect(await primaryKey.get(10, "abc")).to.eq(null);
+      });
     });
   });
 
   describe("#get", async () => {
     it("should find item", async () => {
       const item = await primaryKey.get(10, "abc");
-      expect(item).to.be.eq(null);
+      expect(item).to.eq(null);
     });
 
     it("should find item", async () => {
@@ -114,7 +148,6 @@ describe("FullPrimaryKey", () => {
       expect(items1[0].id).to.eq(10);
       expect(items1[1].id).to.eq(11);
 
-
       const items2 = (await primaryKey.batchGetFull([
         [10, "abc"],
         [10000, "asdgasdgs"],
@@ -128,7 +161,6 @@ describe("FullPrimaryKey", () => {
       expect(items2[2]!.title).to.eq("abc");
     });
   });
-
 
   describe("#query", () => {
     it("should find items", async () => {
@@ -209,6 +241,7 @@ describe("FullPrimaryKey", () => {
       expect(res.records[1].title).to.eq("abc");
     });
   });
+
   describe("#update", () => {
     it("should be able to update items", async () => {
       await primaryKey.update(10, "abc", { count: ["ADD", 1] });
@@ -220,6 +253,37 @@ describe("FullPrimaryKey", () => {
 
       card = await primaryKey.get(10, "abc");
       expect(card!.count).to.eq(3);
+    });
+
+    context("when condition check was failed", () => {
+      it("should throw error", async () => {
+        const [ e ] = await toJS(primaryKey.update(10, "abc", {
+          count: ["ADD", 1],
+        }, {
+          condition: { id: AttributeExists() },
+        }));
+
+        expect(e).to.be.instanceOf(Error)
+          .with.property("name", "ConditionalCheckFailedException");
+
+        expect(e).to.have.property("message", "The conditional request failed");
+      });
+    });
+
+    context("when condition check was passed", () => {
+      it("should update item as per provided condition", async () => {
+        await primaryKey.update(10, "abc", {
+          count: ["PUT", 123],
+        }, {
+          condition: [
+            { title: Contains("!@#") },
+            { count: AttributeNotExists() },
+          ],
+        });
+
+        const card = await primaryKey.get(10, "abc");
+        expect(card).to.have.property("count", 123);
+      });
     });
   });
 });

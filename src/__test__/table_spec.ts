@@ -1,33 +1,32 @@
-import * as chai from 'chai';
-const expect = chai.expect;
+import { expect } from "chai";
 
 import {
   Decorator,
   Query,
   Table,
-} from '../index';
+} from "../index";
+import { toJS } from "./helper";
 
 describe("Table", () => {
   @Decorator.Table({ name: `prod-Card${Math.random()}` })
   class Card extends Table {
-    @Decorator.Attribute()
-    public id: number;
+    @Decorator.FullPrimaryKey("id", "title")
+    public static readonly primaryKey: Query.FullPrimaryKey<Card, number, string>;
 
-    @Decorator.Attribute()
-    public title: string;
-
-    // @Decorator.Attribute({ timeToLive: true })
-    @Decorator.Attribute()
-    public expiresAt: number;
-
-    @Decorator.FullPrimaryKey('id', 'title')
-    static readonly primaryKey: Query.FullPrimaryKey<Card, number, string>;
-
-    @Decorator.HashGlobalSecondaryIndex('title')
-    static readonly titleIndex: Query.HashGlobalSecondaryIndex<Card, string>;
+    @Decorator.HashGlobalSecondaryIndex("title")
+    public static readonly titleIndex: Query.HashGlobalSecondaryIndex<Card, string>;
 
     @Decorator.Writer()
-    static readonly writer: Query.Writer<Card>;
+    public static readonly writer: Query.Writer<Card>;
+
+    @Decorator.Attribute()
+    public id!: number;
+
+    @Decorator.Attribute()
+    public title!: string;
+
+    @Decorator.Attribute({ timeToLive: true })
+    public expiresAt!: number;
   }
 
   beforeEach(async () => {
@@ -58,20 +57,56 @@ describe("Table", () => {
     expect(reloadedCard!.title).to.eq("100");
   });
 
-  // https://github.com/aws/aws-sdk-js/issues/1527
-  // TTL doesn't supported at dynamo-local Yet
-  xit("should works with TTL", async () => {
+  it("should works with TTL", async () => {
     const card = new Card();
     card.id = 10;
     card.title = "100";
-    card.expiresAt = ((new Date()).valueOf() / 1000) + 100;
+    card.expiresAt = Math.floor(Date.now() / 1000) + 5; // unix timestamp after 5 sec
     await card.save();
 
-    await new Promise((resolve, reject) => {
-      setTimeout(resolve, 300);
+    // Wait 15 sec
+    await new Promise((resolve) => setTimeout(resolve, 15000));
+
+    const reloaded = await Card.primaryKey.get(10, "100", { consistent: true });
+    expect(reloaded).to.eq(null);
+  });
+
+  describe("Conditions", () => {
+    context("when condition check was failed", () => {
+      it("should throw error", async () => {
+        const card = new Card();
+        card.id = 22;
+        card.title = "foo";
+        await card.save();
+
+        const [ e ] = await toJS(card.save({
+          condition: {
+            id: Query.AttributeNotExists(),
+          },
+        }));
+
+        expect(e).to.be.instanceOf(Error)
+          .with.property("name", "ConditionalCheckFailedException");
+
+        expect(e).to.have.property("message", "The conditional request failed");
+      });
     });
 
-    const reloadCard = await Card.primaryKey.get(10, "100");
-    expect(reloadCard).to.be.eq(null);
+    context("when condition check was passed", () => {
+      it("should put item as per provided condition", async () => {
+        const card = new Card();
+        card.id = 22;
+        card.title = "bar";
+
+        await card.save({
+          condition: {
+            id: Query.AttributeNotExists(),
+          },
+        });
+
+        const reloaded = Card.primaryKey.get(22, "bar", { consistent: true });
+        expect(reloaded).not.to.be.eq(null);
+      });
+    });
   });
 });

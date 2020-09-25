@@ -1,6 +1,7 @@
-import { DynamoDB } from 'aws-sdk';
+import { DynamoDB } from "aws-sdk";
 import * as _ from "lodash";
-import { ITable, Table } from '../table';
+
+import { ITable, Table } from "../table";
 
 export function deserialize<T extends Table>(
   tableClass: ITable<T>,

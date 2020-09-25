@@ -1,9 +1,6 @@
 {
-  "extends": [
-    "@vingle/tslint-preset"
-  ],
-  "rules": {
-    "max-classes-per-file": false,
-    "only-arrow-functions": false
-  }
+    "extends": ["@vingle/tslint-preset"],
+    "rules": {
+        "interface-name": false
+    }
 }

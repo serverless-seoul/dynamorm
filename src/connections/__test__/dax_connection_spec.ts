@@ -1,9 +1,7 @@
-import { expect } from 'chai';
+import { expect } from "chai";
 
 import { DAXConnection } from "../dax_connection";
-
-// tslint:disable-next-line: no-var-requires
-const AmazonDaxClient = require("amazon-dax-client");
+const AmazonDaxClient = require("amazon-dax-client"); // tslint:disable-line
 
 import * as AWS from "aws-sdk";
 

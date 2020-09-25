@@ -1,7 +1,7 @@
 import { expect } from "chai";
 
-import { Attribute } from '../../metadata';
-import * as AttributeValue from '../attribute_value';
+import { Attribute } from "../../metadata";
+import * as AttributeValue from "../attribute_value";
 
 describe("AttributeValue.parse", () => {
   it("should parse number", () => {

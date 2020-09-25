@@ -1,2 +1,5 @@
-dst/__test__
-.npm
+dst/**/__test__
+.github
+.idea
+.vscode
+src/

@@ -1,5 +1,3 @@
-import "reflect-metadata";
-
 import { Attribute as AttributeMetadata } from "../metadata";
 import { ITable, Table } from "../table";
 

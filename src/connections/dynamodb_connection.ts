@@ -1,7 +1,6 @@
 import { Connection } from "./connection";
 
 import * as AWS from "aws-sdk";
-import { DynamoDB } from "aws-sdk";
 
 import * as HTTP from "http";
 import * as HTTPS from "https";
@@ -15,7 +14,7 @@ export class DynamoDBConnection implements Connection {
     endpoint: string | undefined;
     enableAWSXray: boolean;
   }) {
-    const dynamoDBOptions: DynamoDB.ClientConfiguration = {
+    const dynamoDBOptions: AWS.DynamoDB.ClientConfiguration = {
       region: options.region,
       endpoint: options.endpoint,
       httpOptions: {
@@ -33,8 +32,8 @@ export class DynamoDBConnection implements Connection {
         service: this.client,
       });
     } else {
-      this.client = new DynamoDB(dynamoDBOptions);
-      this.documentClient = new DynamoDB.DocumentClient({
+      this.client = new AWS.DynamoDB(dynamoDBOptions);
+      this.documentClient = new AWS.DynamoDB.DocumentClient({
         service: this.client,
       });
     }

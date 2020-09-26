@@ -49,6 +49,25 @@ export class BlogPost extends Table {
 }
 ```
 
+Dynamorm supports all dynamodb query / scan / update / delete interface, and...
+- TimeToLive attribute
+- DAX (DynamoDB Accelerator)
+- Optimized aws-sdk usage (HTTP Connection reusing)
+- AWS X-Ray
+- Testing (Local DynamoDB) support  
 
+... and more!
 # **[Checkout Full Documents](https://serverless-seoul.github.io/dynamorm/docs/introduction)!**
-and figure out all the features!
+
+
+# Testing
+you need to run dynamodb locally in order to run unit tests  
+```
+brew cask install docker
+docker pull amazon/dynamodb-local
+docker run --rm --name catch-dynamo -p 8000:8000 -d amazon/dynamodb-local
+```
+running test  
+```
+DYNAMO_TYPES_ENDPOINT=http://127.0.0.1:8000 npm run test
+```

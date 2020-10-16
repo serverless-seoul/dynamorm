@@ -51,7 +51,7 @@ import {
 export class BlogPost extends Table {
   // Here we define this tables primaryKey as "Hash" - which means it'll only have hash key, no rangekey
   @Decorator.HashPrimaryKey("id")
-  public static readonly primaryKey: Query.HashPrimaryKey<BlogPost, number>; 
+  public static readonly primaryKey: Query.HashPrimaryKey<BlogPost, string>; 
 
   // Writer is optional syntax sugar - only needed for none instance method operations, such as batchUpdate
   @Decorator.Writer()

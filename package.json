@@ -29,7 +29,7 @@
     "lint": "tslint -c tslint.json 'src/**/*.ts'"
   },
   "engines": {
-    "node": "^12.10.0"
+    "node": ">=12.10.0"
   },
   "author": "Kurt Lee",
   "license": "Apache-2.0",

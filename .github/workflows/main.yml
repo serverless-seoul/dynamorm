@@ -7,10 +7,13 @@ jobs:
     services:
       dynamodb:
         image: amazon/dynamodb-local
-        # @note Github overwrites WORKDIR to repository path, so overwrite that again
         options: >-
-          --workdir /home/dynamodblocal
-          --health-cmd "curl --fail http://127.0.0.1:8000/shell/ || exit 1" --health-interval 10s --health-timeout 5s --health-retries 5
+          --health-cmd "curl --fail -X POST http://127.0.0.1:8000 -H 'Accept-Encoding: identity' -H 'Authorization: AWS4-HMAC-SHA256 Credential=AKIAXXXXXXXXXXXXXXXX/20190505/ap-southeast-2/dynamodb/aws4_request, SignedHeaders=accept-encoding;cache-control;content-type;user-agent;x-amz-date;x-amz-target, Signature=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX' -H 'Content-Type: application/json' -H 'User-Agent: postman' -H 'X-Amz-Date: 20190505T235951Z' -H 'X-Amz-Target: DynamoDB_20120810.ListTables' -H 'cache-control: no-cache' -d '{}' || exit 1"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 8000:8000
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3

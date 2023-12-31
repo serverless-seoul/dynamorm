@@ -1,5 +1,4 @@
 import { DynamoDB } from "aws-sdk";
-import * as _ from "lodash";
 
 import { ITable, Table } from "../table";
 
@@ -15,7 +14,7 @@ const RANGE_KEY_REF = "#rk";
 export class LocalSecondaryIndex<T extends Table, HashKeyType, RangeKeyType> {
   constructor(
     readonly tableClass: ITable<T>,
-    readonly metadata: Metadata.Indexes.LocalSecondaryIndexMetadata,
+    readonly metadata: Metadata.Indexes.LocalSecondaryIndexMetadata
   ) {}
 
   public async query(options: {
@@ -51,8 +50,8 @@ export class LocalSecondaryIndex<T extends Table, HashKeyType, RangeKeyType> {
     if (options.range) {
       const rangeKeyOptions = Query.parseCondition(options.range, RANGE_KEY_REF);
       params.KeyConditionExpression += ` AND ${rangeKeyOptions.conditionExpression}`;
-      Object.assign(params.ExpressionAttributeNames, { [RANGE_KEY_REF]: this.metadata.range.name });
-      Object.assign(params.ExpressionAttributeValues, rangeKeyOptions.expressionAttributeValues);
+      params.ExpressionAttributeNames = { ...params.ExpressionAttributeNames, [RANGE_KEY_REF]: this.metadata.range.name };
+      params.ExpressionAttributeValues = { ...params.ExpressionAttributeValues, ...rangeKeyOptions.expressionAttributeValues };
     }
 
     const result = await this.tableClass.metadata.connection.documentClient.query(params).promise();

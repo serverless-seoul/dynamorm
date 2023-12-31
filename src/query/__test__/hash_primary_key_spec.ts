@@ -40,7 +40,7 @@ describe("HashPrimaryKey", () => {
 
     primaryKey = new HashPrimaryKey<Card, number>(
       Card,
-      Card.metadata.primaryKey as Metadata.Indexes.HashPrimaryKeyMetadata,
+      Card.metadata.primaryKey as Metadata.Indexes.HashPrimaryKeyMetadata
     );
   });
 
@@ -113,7 +113,7 @@ describe("HashPrimaryKey", () => {
 
       const ids = _.sortBy(
         _.concat(res1.records, res2.records),
-        (item) => item.id,
+        (item) => item.id
       ).map((c) => c.id);
 
       expect(ids).to.deep.eq( _.sortBy(cards.map((c) => c.id), (i) => i) );
@@ -184,7 +184,7 @@ describe("HashPrimaryKey", () => {
           count: ["PUT", 123],
         }, {
           condition: [
-            { count:  Between(0, 100) },
+            { count: Between(0, 100) },
           ],
         });
 

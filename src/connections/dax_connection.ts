@@ -3,11 +3,12 @@ import { Connection } from "./connection";
 import * as AWS from "aws-sdk";
 import { DynamoDB } from "aws-sdk";
 
-const AmazonDaxClient = require("amazon-dax-client"); // tslint:disable-line
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const AmazonDaxClient = require("amazon-dax-client");
 
 export class DAXConnection implements Connection {
-  private __documentClient: AWS.DynamoDB.DocumentClient; // tslint:disable-line
-  private __client: AWS.DynamoDB; // tslint:disable-line
+  private __documentClient: AWS.DynamoDB.DocumentClient;
+  private __client: AWS.DynamoDB;
 
   constructor(options: {
     region?: string;

@@ -1,6 +1,0 @@
-{
-    "extends": ["@vingle/tslint-preset"],
-    "rules": {
-        "interface-name": false
-    }
-}

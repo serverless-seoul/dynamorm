@@ -18,7 +18,7 @@ export class Writer<T extends Table> {
     record: T,
     options: Partial<{
       condition: Conditions<T> | Array<Conditions<T>>;
-    }> = {},
+    }> = {}
   ) {
     try {
       const res = await this.tableClass.metadata.connection.documentClient.put({
@@ -30,7 +30,6 @@ export class Writer<T extends Table> {
       record.setAttributes(res.Attributes || {});
       return record;
     } catch (e) {
-      // tslint:disable-next-line
       console.log(`Dynamo-Types Put - ${JSON.stringify(record.serialize(), null, 2)}`);
       throw e;
     }
@@ -46,7 +45,7 @@ export class Writer<T extends Table> {
             Item: Codec.serialize(this.tableClass, record),
           },
         };
-      }),
+      })
     );
   }
 
@@ -54,7 +53,7 @@ export class Writer<T extends Table> {
     record: T,
     options: Partial<{
       condition: Conditions<T> | Array<Conditions<T>>;
-    }> = {},
+    }> = {}
   ) {
     await this.tableClass.metadata.connection.documentClient.delete({
       TableName: this.tableClass.metadata.name,
@@ -66,7 +65,7 @@ export class Writer<T extends Table> {
 
 function KeyFromRecord<T extends Table>(
   record: T,
-  metadata: Metadata.Indexes.FullPrimaryKeyMetadata | Metadata.Indexes.HashPrimaryKeyMetadata,
+  metadata: Metadata.Indexes.FullPrimaryKeyMetadata | Metadata.Indexes.HashPrimaryKeyMetadata
 ) {
   if (metadata.type === "HASH") {
     return {

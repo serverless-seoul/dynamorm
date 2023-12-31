@@ -5,7 +5,6 @@ import { deserialize, unmarshal } from "../deserialize";
 
 import { Table } from "../../table";
 
-// tslint:disable:max-classes-per-file
 class Card extends Table {
   public id!: number;
 }
@@ -33,7 +32,6 @@ class Falsy extends Table {
   public gle!: string[];
   public qqq!: object;
 }
-// tslint:enable:max-classes-per-file
 
 (Falsy as any).metadata = {
   name: "falsy",
@@ -74,7 +72,7 @@ describe("#deserialize", () => {
       Card,
       {
         id: 10,
-      },
+      }
     );
 
     expect(record.getAttribute("id")).to.eq(10);
@@ -88,7 +86,7 @@ describe("#deserialize", () => {
         bar: false,
         baz: null,
         baq: "",
-      },
+      }
     );
 
     expect(record.getAttribute("foo")).to.be.eq(0);
@@ -106,7 +104,7 @@ describe("#unmarshal", () => {
         id: {
           N: "10",
         },
-      },
+      }
     );
 
     expect(record.getAttribute("id")).to.eq(10);
@@ -141,7 +139,7 @@ describe("#unmarshal", () => {
             },
           },
         },
-      },
+      }
     );
 
     expect(record.getAttribute("foo")).to.be.eq(0);

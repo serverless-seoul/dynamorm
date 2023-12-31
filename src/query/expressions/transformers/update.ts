@@ -14,7 +14,7 @@ const ACTION_TOKEN_MAP = new Map<UpdateAction, string>([
 
 export function buildUpdate<T>(
   metadata: Metadata.Table.Metadata,
-  changes: UpdateChanges<T>,
+  changes: UpdateChanges<T>
 ) {
   const keyRef = new Map<string, string>();
   const valueRef = new Map<string, any>();

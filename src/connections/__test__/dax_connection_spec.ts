@@ -1,7 +1,8 @@
 import { expect } from "chai";
 
 import { DAXConnection } from "../dax_connection";
-const AmazonDaxClient = require("amazon-dax-client"); // tslint:disable-line
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const AmazonDaxClient = require("amazon-dax-client");
 
 import * as AWS from "aws-sdk";
 

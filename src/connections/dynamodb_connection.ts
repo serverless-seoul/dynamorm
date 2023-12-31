@@ -25,6 +25,7 @@ export class DynamoDBConnection implements Connection {
     if (options.enableAWSXray) {
       // Since "require" itself does something for this lib, such as logging
       // importing this only when it's needed
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
       const AWSXRay = require("aws-xray-sdk-core");
       const aws = AWSXRay.captureAWS(AWS);
       this.client = new aws.DynamoDB(dynamoDBOptions);

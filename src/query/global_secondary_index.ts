@@ -11,11 +11,10 @@ const HASH_VALUE_REF = ":hkv";
 
 const RANGE_KEY_REF = "#rk";
 
-// tslint:disable:max-classes-per-file
 export class FullGlobalSecondaryIndex<T extends Table, HashKeyType, RangeKeyType> {
   constructor(
     readonly tableClass: ITable<T>,
-    readonly metadata: Metadata.Indexes.FullGlobalSecondaryIndexMetadata,
+    readonly metadata: Metadata.Indexes.FullGlobalSecondaryIndexMetadata
   ) {}
 
   public async query(options: {
@@ -51,8 +50,8 @@ export class FullGlobalSecondaryIndex<T extends Table, HashKeyType, RangeKeyType
     if (options.range) {
       const rangeKeyOptions = Query.parseCondition(options.range, RANGE_KEY_REF);
       params.KeyConditionExpression += ` AND ${rangeKeyOptions.conditionExpression}`;
-      Object.assign(params.ExpressionAttributeNames, { [RANGE_KEY_REF]: this.metadata.range.name });
-      Object.assign(params.ExpressionAttributeValues, rangeKeyOptions.expressionAttributeValues);
+      params.ExpressionAttributeNames = { ...params.ExpressionAttributeNames, [RANGE_KEY_REF]: this.metadata.range.name };
+      params.ExpressionAttributeValues = { ...params.ExpressionAttributeValues, ...rangeKeyOptions.expressionAttributeValues };
     }
 
     const result = await this.tableClass.metadata.connection.documentClient.query(params).promise();
@@ -101,7 +100,7 @@ export class FullGlobalSecondaryIndex<T extends Table, HashKeyType, RangeKeyType
 export class HashGlobalSecondaryIndex<T extends Table, HashKeyType> {
   constructor(
     readonly tableClass: ITable<T>,
-    readonly metadata: Metadata.Indexes.HashGlobalSecondaryIndexMetadata,
+    readonly metadata: Metadata.Indexes.HashGlobalSecondaryIndexMetadata
   ) {}
 
   public async query(hash: HashKeyType, options: { limit?: number, consistent?: boolean } = {}) {
@@ -162,4 +161,3 @@ export class HashGlobalSecondaryIndex<T extends Table, HashKeyType> {
     };
   }
 }
-// tslint:enable:max-classes-per-file

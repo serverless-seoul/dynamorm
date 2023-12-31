@@ -14,16 +14,14 @@ export type OperatorType = "equal"
   | "contains";
 
 export class Operator<T> {
-  // tslint:disable:variable-name
   private readonly _type: OperatorType;
   private readonly _value: T | Operator<T>;
   private readonly _useValue: boolean;
-  // tslint:enable:variable-name
 
   public constructor(
     type: OperatorType,
     value: T | Operator<T>,
-    useValue: boolean = true,
+    useValue: boolean = true
   ) {
     this._type = type;
     this._value = value;

@@ -40,7 +40,7 @@ describe("FullPrimaryKey", () => {
 
     primaryKey = new FullPrimaryKey<Card, number, string>(
       Card,
-      Card.metadata.primaryKey as Metadata.Indexes.FullPrimaryKeyMetadata,
+      Card.metadata.primaryKey as Metadata.Indexes.FullPrimaryKeyMetadata
     );
   });
 

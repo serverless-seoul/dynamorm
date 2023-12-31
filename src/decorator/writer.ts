@@ -13,7 +13,7 @@ export function Writer() {
       {
         value: new Query.Writer(tableClass),
         writable: false,
-      },
+      }
     );
   };
 }

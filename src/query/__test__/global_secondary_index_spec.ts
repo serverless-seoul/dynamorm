@@ -161,7 +161,7 @@ describe("FullGlobalSecondaryIndex", () => {
             id: cardId,
             title: cardId.toString(),
             // only even items have "count",
-            count: cardId % 2 === 0 ? 1 : undefined
+            count: cardId % 2 === 0 ? 1 : undefined,
           },
         }).promise();
       }

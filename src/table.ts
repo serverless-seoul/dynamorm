@@ -25,9 +25,9 @@ export class Table {
   }
 
   // raw storage for all attributes this record (instance) has
-  private attributes: { [key: string]: any } = {}; // tslint:disable-line
+  private attributes: { [key: string]: any } = {};
 
-  private __writer: Query.Writer<Table> | null = null; // tslint:disable-line
+  private __writer: Query.Writer<Table> | null = null;
 
   public getAttribute(name: string) {
     return this.attributes[name];
@@ -56,7 +56,7 @@ export class Table {
     this: T,
     options?: Partial<{
       condition?: Conditions<T> | Array<Conditions<T>>;
-    }>,
+    }>
   ) {
     return await this.writer.put(this, options);
   }
@@ -64,7 +64,7 @@ export class Table {
     this: T,
     options?: Partial<{
       condition?: Conditions<T> | Array<Conditions<T>>;
-    }>,
+    }>
   ) {
     return await this.writer.delete(this, options);
   }
@@ -74,7 +74,6 @@ export class Table {
   }
 }
 
-// tslint:disable-next-line: interface-name
 export interface ITable<T extends Table> {
   metadata: Metadata.Table.Metadata;
   new(): T;

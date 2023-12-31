@@ -5,7 +5,7 @@ import { ITable, Table } from "../table";
 
 export function deserialize<T extends Table>(
   tableClass: ITable<T>,
-  dynamoAttributes: DynamoDB.DocumentClient.AttributeMap,
+  dynamoAttributes: DynamoDB.DocumentClient.AttributeMap
 ): T {
   const record = new tableClass();
 
@@ -25,7 +25,7 @@ export function deserialize<T extends Table>(
 
 export function unmarshal<T extends Table>(
   tableClass: ITable<T>,
-  dynamoAttributes: DynamoDB.AttributeMap,
+  dynamoAttributes: DynamoDB.AttributeMap
 ): T {
   const result = DynamoDB.Converter.unmarshall(dynamoAttributes);
   _.map(result, (val, key) => {

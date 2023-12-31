@@ -38,7 +38,7 @@ function defineAttributeProperties(table: ITable<any>) {
         set(this: TableClass, v) {
           this.setAttribute(attr.name, v);
         },
-      },
+      }
     );
   });
 }
@@ -52,7 +52,7 @@ function defineGlobalSecondaryIndexes(table: ITable<any>) {
         {
           value: new Query.HashGlobalSecondaryIndex(table, metadata),
           writable: false,
-        },
+        }
       );
     } else {
       Object.defineProperty(
@@ -61,7 +61,7 @@ function defineGlobalSecondaryIndexes(table: ITable<any>) {
         {
           value: new Query.FullGlobalSecondaryIndex(table, metadata),
           writable: false,
-        },
+        }
       );
     }
   });
@@ -75,7 +75,7 @@ function defineLocalSecondaryIndexes(table: ITable<any>) {
       {
         value: new Query.LocalSecondaryIndex(table, metadata),
         writable: false,
-      },
+      }
     );
   });
 }
@@ -90,7 +90,7 @@ function definePrimaryKeyProperty(table: ITable<any>) {
         {
           value: new Query.FullPrimaryKey(table, pkMetdata),
           writable: false,
-        },
+        }
       );
     } else {
       Object.defineProperty(
@@ -99,7 +99,7 @@ function definePrimaryKeyProperty(table: ITable<any>) {
         {
           value: new Query.HashPrimaryKey(table, pkMetdata),
           writable: false,
-        },
+        }
       );
     }
   }

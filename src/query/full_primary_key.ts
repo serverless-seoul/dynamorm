@@ -20,7 +20,7 @@ const RANGE_KEY_REF = "#rk";
 export class FullPrimaryKey<T extends Table, HashKeyType, RangeKeyType> {
   constructor(
     readonly tableClass: ITable<T>,
-    readonly metadata: Metadata.Indexes.FullPrimaryKeyMetadata,
+    readonly metadata: Metadata.Indexes.FullPrimaryKeyMetadata
   ) {}
 
   public async delete(
@@ -28,7 +28,7 @@ export class FullPrimaryKey<T extends Table, HashKeyType, RangeKeyType> {
     sortKey: RangeKeyType,
     options: Partial<{
       condition: Conditions<T> | Array<Conditions<T>>;
-    }> = {},
+    }> = {}
   ) {
     await this.tableClass.metadata.connection.documentClient.delete({
       TableName: this.tableClass.metadata.name,
@@ -49,7 +49,7 @@ export class FullPrimaryKey<T extends Table, HashKeyType, RangeKeyType> {
   public async get(
     hashKey: HashKeyType,
     sortKey: RangeKeyType,
-    options: { consistent: boolean } = { consistent: false },
+    options: { consistent: boolean } = { consistent: false }
   ): Promise<T | null> {
     const dynamoRecord =
       await this.tableClass.metadata.connection.documentClient.get({
@@ -76,7 +76,7 @@ export class FullPrimaryKey<T extends Table, HashKeyType, RangeKeyType> {
           [this.metadata.hash.name]: key[0],
           [this.metadata.range.name]: key[1],
         };
-      }),
+      })
     );
 
     return {
@@ -95,7 +95,7 @@ export class FullPrimaryKey<T extends Table, HashKeyType, RangeKeyType> {
           [this.metadata.hash.name]: key[0],
           [this.metadata.range.name]: key[1],
         };
-      }),
+      })
     );
 
     return {
@@ -118,7 +118,7 @@ export class FullPrimaryKey<T extends Table, HashKeyType, RangeKeyType> {
             },
           },
         };
-      }),
+      })
     );
   }
 
@@ -154,8 +154,8 @@ export class FullPrimaryKey<T extends Table, HashKeyType, RangeKeyType> {
     if (options.range) {
       const rangeKeyOptions = Query.parseCondition(options.range, RANGE_KEY_REF);
       params.KeyConditionExpression += ` AND ${rangeKeyOptions.conditionExpression}`;
-      Object.assign(params.ExpressionAttributeNames, { [RANGE_KEY_REF]: this.metadata.range.name });
-      Object.assign(params.ExpressionAttributeValues, rangeKeyOptions.expressionAttributeValues);
+      params.ExpressionAttributeNames = { ...params.ExpressionAttributeNames, [RANGE_KEY_REF]: this.metadata.range.name };
+      params.ExpressionAttributeValues = { ...params.ExpressionAttributeValues, ...rangeKeyOptions.expressionAttributeValues };
     }
 
     const result = await this.tableClass.metadata.connection.documentClient.query(params).promise();
@@ -205,7 +205,7 @@ export class FullPrimaryKey<T extends Table, HashKeyType, RangeKeyType> {
     changes: Partial<UpdateChanges<T>>,
     options: Partial<{
       condition: Conditions<T> | Array<Conditions<T>>;
-    }> = {},
+    }> = {}
   ): Promise<void> {
     const update = buildUpdate(this.tableClass.metadata, changes);
     const condition = buildCondition(this.tableClass.metadata, options.condition);

@@ -14,14 +14,14 @@ import { UpdateChanges } from "./expressions/update";
 export class HashPrimaryKey<T extends Table, HashKeyType> {
   constructor(
     readonly tableClass: ITable<T>,
-    readonly metadata: Metadata.Indexes.HashPrimaryKeyMetadata,
+    readonly metadata: Metadata.Indexes.HashPrimaryKeyMetadata
   ) {}
 
   public async delete(
     hashKey: HashKeyType,
     options: Partial<{
       condition: Conditions<T> | Array<Conditions<T>>;
-    }> = {},
+    }> = {}
   ) {
     await this.tableClass.metadata.connection.documentClient.delete({
       TableName: this.tableClass.metadata.name,
@@ -84,7 +84,7 @@ export class HashPrimaryKey<T extends Table, HashKeyType> {
         return {
           [this.metadata.hash.name]: key,
         };
-      }),
+      })
     );
 
     return {
@@ -102,7 +102,7 @@ export class HashPrimaryKey<T extends Table, HashKeyType> {
         return {
           [this.metadata.hash.name]: key,
         };
-      }),
+      })
     );
 
     return {
@@ -124,7 +124,7 @@ export class HashPrimaryKey<T extends Table, HashKeyType> {
             },
           },
         };
-      }),
+      })
     );
   }
 
@@ -135,7 +135,7 @@ export class HashPrimaryKey<T extends Table, HashKeyType> {
     changes: Partial<UpdateChanges<T>>,
     options: Partial<{
       condition: Conditions<T> | Array<Conditions<T>>;
-    }> = {},
+    }> = {}
   ): Promise<void> {
     const update = buildUpdate(this.tableClass.metadata, changes);
     const condition = buildCondition(this.tableClass.metadata, options.condition);

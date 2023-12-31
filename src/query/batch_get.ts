@@ -15,7 +15,7 @@ const MAX_ITEMS = 100;
 export async function __batchGet(
   documentClient: DynamoDB.DocumentClient,
   tableName: string,
-  keys: DynamoDB.DocumentClient.KeyList,
+  keys: DynamoDB.DocumentClient.KeyList
 ) {
   try {
     return await Promise.all(
@@ -42,12 +42,11 @@ export async function __batchGet(
               return true;
             });
           });
-        }),
+        })
     ).then((chunks) => {
       return _.flatten(chunks);
     });
   } catch (e) {
-    // tslint:disable-next-line
     console.log(`Dynamo-Types batchGet - ${JSON.stringify(keys, null, 2)}`);
     throw e;
   }
@@ -56,7 +55,7 @@ export async function __batchGet(
 export async function batchGetFull(
   documentClient: DynamoDB.DocumentClient,
   tableName: string,
-  keys: DynamoDB.DocumentClient.KeyList,
+  keys: DynamoDB.DocumentClient.KeyList
 ) {
   return await __batchGet(documentClient, tableName, keys);
 }
@@ -64,7 +63,7 @@ export async function batchGetFull(
 export async function batchGetTrim(
   documentClient: DynamoDB.DocumentClient,
   tableName: string,
-  keys: DynamoDB.DocumentClient.KeyList,
+  keys: DynamoDB.DocumentClient.KeyList
 ) {
   return _.compact(await __batchGet(documentClient, tableName, keys));
 }

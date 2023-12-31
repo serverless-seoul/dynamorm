@@ -3,3 +3,11 @@ dst/**/__test__
 .idea
 .vscode
 src/
+website/
+docs/
+.releaserc.json
+.nvmrc
+.eslintrc
+renovate.json
+tsconfig.json
+tsconfig.test.json

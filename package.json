@@ -1,6 +1,6 @@
 {
   "name": "@serverless-seoul/dynamorm",
-  "version": "2.11.0",
+  "version": "3.0.1",
   "description": "AWS DynamoDB ORM for Typescript",
   "repository": {
     "type": "git",

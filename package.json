@@ -46,7 +46,7 @@
     "@typescript-eslint/eslint-plugin": "^6.16.0",
     "@typescript-eslint/parser": "^6.16.0",
     "chai": "4.2.0",
-    "check-engine": "1.8.1",
+    "check-engine": "^1.12.0",
     "eslint": "^8.56.0",
     "eslint-plugin-import": "^2.29.1",
     "faker": "^5.1.0",
@@ -58,7 +58,7 @@
     "amazon-dax-client": "^1.2.2",
     "aws-sdk": "^2.538.0",
     "aws-xray-sdk-core": "^2.3.6",
-    "lodash": "^4.17.20",
-    "reflect-metadata": "^0.1.13"
+    "lodash": "^4.17.21",
+    "reflect-metadata": "^0.2.1"
   }
 }

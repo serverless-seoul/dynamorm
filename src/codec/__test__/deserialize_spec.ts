@@ -6,7 +6,7 @@ import { deserialize, unmarshal } from "../deserialize";
 import { Table } from "../../table";
 
 class Card extends Table {
-  public id!: number;
+  declare id: number;
 }
 (Card as any).metadata = {
   name: "card",
@@ -24,13 +24,13 @@ class Card extends Table {
 };
 
 class Falsy extends Table {
-  public foo!: number;
-  public bar!: boolean;
-  public baz!: null;
-  public baq!: string;
-  public vin!: number[];
-  public gle!: string[];
-  public qqq!: object;
+  declare foo: number;
+  declare bar: boolean;
+  declare baz: null;
+  declare baq: string;
+  declare vin: number[];
+  declare gle: string[];
+  declare qqq: object;
 }
 
 (Falsy as any).metadata = {

@@ -26,10 +26,10 @@ export class BlogPost extends Table {
   public static readonly writer: Query.Writer<BlogPost>;
 
   @Decorator.Attribute({ name: "id" })
-  public id: string!;
+  declare id: string;
 
   @Decorator.Attribute({ name: "title" })
-  public title: string!;
+  declare title: string;
 
   @Decorator.Attribute({ name: "body" })
   public body: Array<
@@ -41,10 +41,10 @@ export class BlogPost extends Table {
   public viewCount: number = 0;
 
   @Decorator.Attribute()
-  public author: {
+  declare author: {
     name: string;
     profileImageURL: string;
-  }
+  };
 }
 ```
 
@@ -52,28 +52,22 @@ export class BlogPost extends Table {
 
 ## API
 
-### @Table(options: { name?: string; connection?: Connection } = {}) 
+### @Table(options: { name?: string; connection?: Connection } = {})
 - name means DynamoDB table name
 - connection can be customized per table
-  - if you want to use [DAX](https://aws.amazon.com/dynamodb/dax/) 
+  - if you want to use tables from different regions at the same time
     - ```typescript
-        @Decorator.Table({
-          name: `table_name`,
-          connection: new Connection.DAXConnection({ endpoints: ["dax-url-1", "dax-ur1-2"] })
-        })
-      ```
-  - if you want to use tables from different regions at the same time 
-    - ```typescript
-        import { DynamoDB } from "aws-sdk";
+        import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+        import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
 
-        const client = new DynamoDB({ region: "ap-northeast-2" });
-        const documentClient = new DynamoDB.DocumentClient({ service: client });
+        const client = new DynamoDBClient({ region: "ap-northeast-2" });
+        const documentClient = DynamoDBDocumentClient.from(client);
         @Decorator.Table({
           name: `catalog_${process.env.STAGE}_absolute_product_popularity`,
           connection: { documentClient, client }
         })
         class TableAtSeoul {}
-      ``` 
+      ```
   - As default, it create connection based on default AWS-SDK environment variables
 
 ### @Attribute(options: { name?: string; timeToLive?: true })
@@ -86,16 +80,16 @@ if the value is undefined, it will be ignored from expiration
 @Decorator.Table({ name: `your_table_name_on_aws_dynamodb` })
 export class BlogPost extends Table {
   @Decorator.HashPrimaryKey("id")
-  public static readonly primaryKey: Query.HashPrimaryKey<BlogPost, number>; 
+  public static readonly primaryKey: Query.HashPrimaryKey<BlogPost, number>;
 
   @Decorator.Attribute({ name: "id" })
-  public id: string!;
+  declare id: string;
 
   @Decorator.Attribute({ name: "title" })
-  public title: string!;
+  declare title: string;
 
   @Decorator.Attribute({ name: "expiresAt", timeToLive: true })
-  public expiresAt?: number;
+  declare expiresAt: number | undefined;
 }
 
 

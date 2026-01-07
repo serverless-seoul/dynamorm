@@ -1,7 +1,8 @@
 import { expect } from "chai";
-import * as faker from "faker";
+import { faker } from "@faker-js/faker";
 import * as _ from "lodash";
 import { toJS } from "../../__test__/helper";
+import { PutCommand } from "@aws-sdk/lib-dynamodb";
 
 import * as Metadata from "../../metadata";
 import { Table } from "../../table";
@@ -24,13 +25,13 @@ describe("HashPrimaryKey", () => {
     public static readonly primaryKey: Query.HashPrimaryKey<Card, number>;
 
     @AttributeDecorator()
-    public id!: number;
+    declare id: number;
 
     @AttributeDecorator()
-    public title!: string;
+    declare title: string;
 
     @AttributeDecorator()
-    public count!: number;
+    declare count: number;
   }
 
   let primaryKey: HashPrimaryKey<Card, number>;
@@ -50,13 +51,13 @@ describe("HashPrimaryKey", () => {
 
   describe("#delete", async () => {
     beforeEach(async () => {
-      await Card.metadata.connection.documentClient.put({
+      await Card.metadata.connection.documentClient.send(new PutCommand({
         TableName: Card.metadata.name,
         Item: {
           id: 10,
           title: "abc",
         },
-      }).promise();
+      }));
     });
 
     it("should delete item if exist", async () => {
@@ -96,7 +97,7 @@ describe("HashPrimaryKey", () => {
     it("should return results", async () => {
       async function createCard() {
         const card = new Card();
-        card.id = faker.random.number();
+        card.id = faker.number.int();
         await card.save();
         return card;
       }
@@ -124,7 +125,7 @@ describe("HashPrimaryKey", () => {
     it ("should return results in order", async () => {
       async function createCard() {
         const card = new Card();
-        card.id = faker.random.number();
+        card.id = faker.number.int();
         await card.save();
         return card;
       }

@@ -26,13 +26,13 @@ class Card extends Table {
   }
 
   @Decorator.Attribute()
-  public id!: number;
+  declare id: number;
 
   @Decorator.Attribute()
-  public title!: string;
+  declare title: string;
 
   @Decorator.Attribute()
-  public count!: number;
+  declare count: number;
 }
 
 describe("LocalSecondaryIndex", () => {

@@ -20,13 +20,13 @@ describe("Table", () => {
     public static readonly writer: Query.Writer<Card>;
 
     @Decorator.Attribute()
-    public id!: number;
+    declare id: number;
 
     @Decorator.Attribute()
-    public title!: string;
+    declare title: string;
 
     @Decorator.Attribute({ timeToLive: true })
-    public expiresAt!: number;
+    declare expiresAt: number;
   }
 
   beforeEach(async () => {

@@ -44,4 +44,5 @@ jspm_packages
 .serverless
 .DS_Store
 /.idea
+.claude/
 website/build

@@ -1,4 +1,5 @@
 import { expect } from "chai";
+import { PutCommand } from "@aws-sdk/lib-dynamodb";
 
 import { Table } from "../../table";
 
@@ -18,13 +19,13 @@ class Card extends Table {
   public static readonly fullTitleIndex: Query.FullGlobalSecondaryIndex<Card, string, number>;
 
   @Decorator.Attribute()
-  public id!: number;
+  declare id: number;
 
   @Decorator.Attribute()
-  public title!: string;
+  declare title: string;
 
   @Decorator.Attribute()
-  public count!: number;
+  declare count: number;
 }
 
 describe("HashGlobalSecondaryIndex", () => {
@@ -38,27 +39,27 @@ describe("HashGlobalSecondaryIndex", () => {
 
   describe("#query", () => {
     it("should find items", async () => {
-      await Card.metadata.connection.documentClient.put({
+      await Card.metadata.connection.documentClient.send(new PutCommand({
         TableName: Card.metadata.name,
         Item: {
           id: 10,
           title: "abc",
         },
-      }).promise();
-      await Card.metadata.connection.documentClient.put({
+      }));
+      await Card.metadata.connection.documentClient.send(new PutCommand({
         TableName: Card.metadata.name,
         Item: {
           id: 11,
           title: "abd",
         },
-      }).promise();
-      await Card.metadata.connection.documentClient.put({
+      }));
+      await Card.metadata.connection.documentClient.send(new PutCommand({
         TableName: Card.metadata.name,
         Item: {
           id: 12,
           title: "abd",
         },
-      }).promise();
+      }));
 
       const res = await Card.hashTitleIndex.query("abd");
       expect(res.records.length).to.eq(2);
@@ -72,13 +73,13 @@ describe("HashGlobalSecondaryIndex", () => {
 
     beforeEach(async () => {
       for (const cardId of cardIds) {
-        await Card.metadata.connection.documentClient.put({
+        await Card.metadata.connection.documentClient.send(new PutCommand({
           TableName: Card.metadata.name,
           Item: {
             id: cardId,
             title: cardId.toString(),
           },
-        }).promise();
+        }));
       }
     });
 
@@ -105,38 +106,38 @@ describe("FullGlobalSecondaryIndex", () => {
 
   describe("#query", () => {
     it("should find items", async () => {
-      await Card.metadata.connection.documentClient.put({
+      await Card.metadata.connection.documentClient.send(new PutCommand({
         TableName: Card.metadata.name,
         Item: {
           id: 10,
           title: "abc",
           count: 10,
         },
-      }).promise();
-      await Card.metadata.connection.documentClient.put({
+      }));
+      await Card.metadata.connection.documentClient.send(new PutCommand({
         TableName: Card.metadata.name,
         Item: {
           id: 11,
           title: "abd",
           count: 11,
         },
-      }).promise();
-      await Card.metadata.connection.documentClient.put({
+      }));
+      await Card.metadata.connection.documentClient.send(new PutCommand({
         TableName: Card.metadata.name,
         Item: {
           id: 12,
           title: "abd",
           count: 12,
         },
-      }).promise();
-      await Card.metadata.connection.documentClient.put({
+      }));
+      await Card.metadata.connection.documentClient.send(new PutCommand({
         TableName: Card.metadata.name,
         Item: {
           id: 13,
           title: "abd",
           count: 13,
         },
-      }).promise();
+      }));
 
       const res = await Card.fullTitleIndex.query({
         hash: "abd",
@@ -155,7 +156,7 @@ describe("FullGlobalSecondaryIndex", () => {
 
     beforeEach(async () => {
       for (const cardId of cardIds) {
-        await Card.metadata.connection.documentClient.put({
+        await Card.metadata.connection.documentClient.send(new PutCommand({
           TableName: Card.metadata.name,
           Item: {
             id: cardId,
@@ -163,7 +164,7 @@ describe("FullGlobalSecondaryIndex", () => {
             // only even items have "count",
             count: cardId % 2 === 0 ? 1 : undefined,
           },
-        }).promise();
+        }));
       }
     });
 

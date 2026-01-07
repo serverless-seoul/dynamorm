@@ -1,25 +1,28 @@
 import { Connection } from "./connection";
 
-import * as AWS from "aws-sdk";
+import { DynamoDBClient, DynamoDBClientConfig } from "@aws-sdk/client-dynamodb";
+import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
+import { NodeHttpHandler } from "@smithy/node-http-handler";
 
 import * as HTTP from "http";
 import * as HTTPS from "https";
 
 export class DynamoDBConnection implements Connection {
-  public readonly documentClient: AWS.DynamoDB.DocumentClient;
-  public readonly client: AWS.DynamoDB;
+  public readonly documentClient: DynamoDBDocumentClient;
+  public readonly client: DynamoDBClient;
 
   constructor(options: {
     region?: string;
     endpoint: string | undefined;
     enableAWSXray: boolean;
   }) {
-    const dynamoDBOptions: AWS.DynamoDB.ClientConfiguration = {
+    const dynamoDBOptions: DynamoDBClientConfig = {
       region: options.region,
       endpoint: options.endpoint,
-      httpOptions: {
-        agent: this.httpAgent(options.endpoint),
-      },
+      requestHandler: new NodeHttpHandler({
+        httpAgent: this.httpAgent(options.endpoint),
+        httpsAgent: this.httpsAgent(),
+      }),
     };
 
     if (options.enableAWSXray) {
@@ -27,17 +30,16 @@ export class DynamoDBConnection implements Connection {
       // importing this only when it's needed
       // eslint-disable-next-line @typescript-eslint/no-var-requires
       const AWSXRay = require("aws-xray-sdk-core");
-      const aws = AWSXRay.captureAWS(AWS);
-      this.client = new aws.DynamoDB(dynamoDBOptions);
-      this.documentClient = new aws.DynamoDB.DocumentClient({
-        service: this.client,
-      });
+      this.client = AWSXRay.captureAWSv3Client(new DynamoDBClient(dynamoDBOptions));
     } else {
-      this.client = new AWS.DynamoDB(dynamoDBOptions);
-      this.documentClient = new AWS.DynamoDB.DocumentClient({
-        service: this.client,
-      });
+      this.client = new DynamoDBClient(dynamoDBOptions);
     }
+
+    this.documentClient = DynamoDBDocumentClient.from(this.client, {
+      marshallOptions: {
+        removeUndefinedValues: true,
+      },
+    });
   }
 
   private httpAgent(endpoint: string | undefined) {
@@ -45,11 +47,14 @@ export class DynamoDBConnection implements Connection {
       return new HTTP.Agent({
         keepAlive: true,
       });
-    } else {
-      return new HTTPS.Agent({
-        rejectUnauthorized: true,
-        keepAlive: true,
-      });
     }
+    return undefined;
+  }
+
+  private httpsAgent() {
+    return new HTTPS.Agent({
+      rejectUnauthorized: true,
+      keepAlive: true,
+    });
   }
 }

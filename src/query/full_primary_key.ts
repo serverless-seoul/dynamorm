@@ -1,4 +1,12 @@
-import { DynamoDB } from "aws-sdk";
+import {
+  DeleteCommand,
+  GetCommand,
+  QueryCommand,
+  QueryCommandInput,
+  ScanCommand,
+  ScanCommandInput,
+  UpdateCommand,
+} from "@aws-sdk/lib-dynamodb";
 
 import { ITable, Table } from "../table";
 
@@ -30,7 +38,7 @@ export class FullPrimaryKey<T extends Table, HashKeyType, RangeKeyType> {
       condition: Conditions<T> | Array<Conditions<T>>;
     }> = {}
   ) {
-    await this.tableClass.metadata.connection.documentClient.delete({
+    await this.tableClass.metadata.connection.documentClient.send(new DeleteCommand({
       TableName: this.tableClass.metadata.name,
       // ReturnValues: "ALL_OLD",
       Key: {
@@ -38,7 +46,7 @@ export class FullPrimaryKey<T extends Table, HashKeyType, RangeKeyType> {
         [this.metadata.range.name]: sortKey,
       },
       ...buildCondition(this.tableClass.metadata, options.condition),
-    }).promise();
+    }));
   }
 
   /**
@@ -52,14 +60,14 @@ export class FullPrimaryKey<T extends Table, HashKeyType, RangeKeyType> {
     options: { consistent: boolean } = { consistent: false }
   ): Promise<T | null> {
     const dynamoRecord =
-      await this.tableClass.metadata.connection.documentClient.get({
+      await this.tableClass.metadata.connection.documentClient.send(new GetCommand({
         TableName: this.tableClass.metadata.name,
         Key: {
           [this.metadata.hash.name]: hashKey,
           [this.metadata.range.name]: sortKey,
         },
         ConsistentRead: options.consistent,
-      }).promise();
+      }));
     if (!dynamoRecord.Item) {
       return null;
     } else {
@@ -127,7 +135,7 @@ export class FullPrimaryKey<T extends Table, HashKeyType, RangeKeyType> {
     range?: Query.Conditions<RangeKeyType>,
     rangeOrder?: "ASC" | "DESC",
     limit?: number,
-    exclusiveStartKey?: DynamoDB.DocumentClient.Key,
+    exclusiveStartKey?: Record<string, unknown>,
     consistent?: boolean,
   }) {
     if (!options.rangeOrder) {
@@ -135,7 +143,7 @@ export class FullPrimaryKey<T extends Table, HashKeyType, RangeKeyType> {
     }
     const ScanIndexForward = options.rangeOrder === "ASC";
 
-    const params: DynamoDB.DocumentClient.QueryInput = {
+    const params: QueryCommandInput = {
       TableName: this.tableClass.metadata.name,
       Limit: options.limit,
       ScanIndexForward,
@@ -158,7 +166,7 @@ export class FullPrimaryKey<T extends Table, HashKeyType, RangeKeyType> {
       params.ExpressionAttributeValues = { ...params.ExpressionAttributeValues, ...rangeKeyOptions.expressionAttributeValues };
     }
 
-    const result = await this.tableClass.metadata.connection.documentClient.query(params).promise();
+    const result = await this.tableClass.metadata.connection.documentClient.send(new QueryCommand(params));
 
     return {
       records: (result.Items || []).map((item) => {
@@ -175,9 +183,9 @@ export class FullPrimaryKey<T extends Table, HashKeyType, RangeKeyType> {
     limit?: number,
     totalSegments?: number,
     segment?: number,
-    exclusiveStartKey?: DynamoDB.DocumentClient.Key,
+    exclusiveStartKey?: Record<string, unknown>,
   } = {}) {
-    const params: DynamoDB.DocumentClient.ScanInput = {
+    const params: ScanCommandInput = {
       TableName: this.tableClass.metadata.name,
       Limit: options.limit,
       ExclusiveStartKey: options.exclusiveStartKey,
@@ -186,7 +194,7 @@ export class FullPrimaryKey<T extends Table, HashKeyType, RangeKeyType> {
       Segment: options.segment,
     };
 
-    const result = await this.tableClass.metadata.connection.documentClient.scan(params).promise();
+    const result = await this.tableClass.metadata.connection.documentClient.send(new ScanCommand(params));
 
     return {
       records: (result.Items || []).map((item) => {
@@ -210,7 +218,7 @@ export class FullPrimaryKey<T extends Table, HashKeyType, RangeKeyType> {
     const update = buildUpdate(this.tableClass.metadata, changes);
     const condition = buildCondition(this.tableClass.metadata, options.condition);
 
-    await this.tableClass.metadata.connection.documentClient.update({
+    await this.tableClass.metadata.connection.documentClient.send(new UpdateCommand({
       TableName: this.tableClass.metadata.name,
       Key: {
         [this.metadata.hash.name]: hashKey,
@@ -220,6 +228,6 @@ export class FullPrimaryKey<T extends Table, HashKeyType, RangeKeyType> {
       ConditionExpression: condition.ConditionExpression,
       ExpressionAttributeNames: { ...update.ExpressionAttributeNames, ...condition.ExpressionAttributeNames },
       ExpressionAttributeValues: { ...update.ExpressionAttributeValues, ...condition.ExpressionAttributeValues },
-    }).promise();
+    }));
   }
 }

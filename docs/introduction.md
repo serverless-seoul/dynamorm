@@ -31,8 +31,6 @@ Written in Typescript from scratch, Fully support typing through template / deco
       - order items follow to keys, missing items are just missing. returns ```Promise<Array<Model>>```
     - BatchGetFull
       - order items follow to keys, fill missing items with "null". returns ```Promise<Array<Model | null>>```
-- DAX Support
-   - You can specify this by setting the connection of table. 
 - Optimized aws-sdk usage
    - aws-sdk has a problem of not reusing HTTP connection towards DynamoDB by default. check [this issue](https://github.com/aws/aws-sdk-js/issues/900)
    - this could often cause serious latency of > 100ms. it has been optimized here by keep-alive [Code](https://github.com/serverless-seoul/dynamorm/blob/master/src/connections/dynamodb_connection.ts#L37)

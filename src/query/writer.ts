@@ -1,6 +1,8 @@
 // Since in DyanmoDB writing is free from any kind index or what soever
 // whole "writing" operations are bundled into one here
 
+import { DeleteCommand, PutCommand } from "@aws-sdk/lib-dynamodb";
+
 import { ITable, Table } from "../table";
 
 import * as Codec from "../codec";
@@ -21,11 +23,11 @@ export class Writer<T extends Table> {
     }> = {}
   ) {
     try {
-      const res = await this.tableClass.metadata.connection.documentClient.put({
+      const res = await this.tableClass.metadata.connection.documentClient.send(new PutCommand({
         TableName: this.tableClass.metadata.name,
         Item: Codec.serialize(this.tableClass, record),
         ...buildCondition(this.tableClass.metadata, options.condition),
-      }).promise();
+      }));
 
       record.setAttributes(res.Attributes || {});
       return record;
@@ -55,11 +57,11 @@ export class Writer<T extends Table> {
       condition: Conditions<T> | Array<Conditions<T>>;
     }> = {}
   ) {
-    await this.tableClass.metadata.connection.documentClient.delete({
+    await this.tableClass.metadata.connection.documentClient.send(new DeleteCommand({
       TableName: this.tableClass.metadata.name,
       Key: KeyFromRecord(record, this.tableClass.metadata.primaryKey),
       ...buildCondition(this.tableClass.metadata, options.condition),
-    }).promise();
+    }));
   }
 }
 

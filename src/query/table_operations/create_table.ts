@@ -1,11 +1,19 @@
 import * as Metadata from "../../metadata";
 
-import { DynamoDB } from "aws-sdk";
+import {
+  CreateTableCommand,
+  CreateTableCommandInput,
+  KeySchemaElement,
+  AttributeDefinition,
+  ScalarAttributeType,
+  UpdateTimeToLiveCommand,
+  waitUntilTableExists,
+} from "@aws-sdk/client-dynamodb";
 import * as _ from "lodash";
 
 export async function createTable(metadata: Metadata.Table.Metadata) {
-  let KeySchema: DynamoDB.Types.KeySchema;
-  let AttributeDefinitions: DynamoDB.Types.AttributeDefinitions;
+  let KeySchema: KeySchemaElement[];
+  let AttributeDefinitions: AttributeDefinition[];
 
   if (metadata.primaryKey.type === "FULL") {
     KeySchema = [{
@@ -17,10 +25,10 @@ export async function createTable(metadata: Metadata.Table.Metadata) {
     }];
     AttributeDefinitions = [{
       AttributeName: metadata.primaryKey.hash.name,
-      AttributeType: metadata.primaryKey.hash.type,
+      AttributeType: metadata.primaryKey.hash.type as ScalarAttributeType,
     }, {
       AttributeName: metadata.primaryKey.range.name,
-      AttributeType: metadata.primaryKey.range.type,
+      AttributeType: metadata.primaryKey.range.type as ScalarAttributeType,
     }];
   } else {
     KeySchema = [{
@@ -29,34 +37,34 @@ export async function createTable(metadata: Metadata.Table.Metadata) {
     }];
     AttributeDefinitions = [{
       AttributeName: metadata.primaryKey.hash.name,
-      AttributeType: metadata.primaryKey.hash.type,
+      AttributeType: metadata.primaryKey.hash.type as ScalarAttributeType,
     }];
   }
 
   metadata.localSecondaryIndexes.map((index) => {
     AttributeDefinitions.push({
       AttributeName: index.range.name,
-      AttributeType: index.range.type,
+      AttributeType: index.range.type as ScalarAttributeType,
     });
   });
 
   metadata.globalSecondaryIndexes.map((index) => {
     AttributeDefinitions.push({
       AttributeName: index.hash.name,
-      AttributeType: index.hash.type,
+      AttributeType: index.hash.type as ScalarAttributeType,
     });
 
     if (index.type === "FULL") {
       AttributeDefinitions.push({
         AttributeName: index.range.name,
-        AttributeType: index.range.type,
+        AttributeType: index.range.type as ScalarAttributeType,
       });
     }
   });
 
   AttributeDefinitions = _.uniqBy(AttributeDefinitions, (attr) => attr.AttributeName);
 
-  const params: DynamoDB.Types.CreateTableInput = {
+  const params: CreateTableCommandInput = {
     /**
      * An array of attributes that describe the key schema for the table and indexes.
      */
@@ -141,20 +149,23 @@ export async function createTable(metadata: Metadata.Table.Metadata) {
     // StreamSpecification?: StreamSpecification;
   };
 
-  const res = await metadata.connection.client.createTable(params).promise();
+  const res = await metadata.connection.client.send(new CreateTableCommand(params));
 
-  await metadata.connection.client.waitFor("tableExists", { TableName: metadata.name}).promise();
+  await waitUntilTableExists(
+    { client: metadata.connection.client, maxWaitTime: 120 },
+    { TableName: metadata.name }
+  );
 
   // TTL
   const ttlAttribute = metadata.attributes.find((attr) => !!attr.timeToLive);
   if (ttlAttribute) {
-    await metadata.connection.client.updateTimeToLive({
+    await metadata.connection.client.send(new UpdateTimeToLiveCommand({
       TableName: metadata.name,
       TimeToLiveSpecification: {
         Enabled: true,
         AttributeName: ttlAttribute.name,
       },
-    }).promise();
+    }));
   }
 
   return res.TableDescription;

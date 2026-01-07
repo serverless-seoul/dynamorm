@@ -17,9 +17,10 @@ describe("AttributeValue.parse", () => {
   });
 
   it("should parse buffer", () => {
+    const buffer = new Uint8Array([120, 120]); // "xx"
     expect(AttributeValue.parse({
-      B: "xx",
-    })).to.deep.eq({ value: "xx", type: Attribute.Type.Buffer});
+      B: buffer,
+    })).to.deep.eq({ value: buffer, type: Attribute.Type.Buffer});
   });
 
   it("should parse array", () => {

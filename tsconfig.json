@@ -8,9 +8,11 @@
         "rootDir": "src",
         "outDir": "dst",
         "noUnusedLocals": true,
-        "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
-        "strict": true
+        "strict": true,
+        "plugins": [
+            { "transform": "./transformer/index.js" }
+        ]
     },
     "exclude": [
         "**/__test__/"

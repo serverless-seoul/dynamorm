@@ -2,10 +2,25 @@ import { Attribute as AttributeMetadata } from "../metadata";
 import { ITable, Table } from "../table";
 
 // Table Decorator
-export function Attribute(options: { name?: string; timeToLive?: true } = {}) {
+export function Attribute(options: { name?: string; timeToLive?: true; __type?: any } = {}) {
   return (record: Table, propertyName: string) => {
     const tableClass = (record.constructor as ITable<any>);
-    const nativeType = Reflect.getMetadata("design:type", record, propertyName);
+
+    // __type is injected by the dynamorm transformer at compile time.
+    // Falls back to Reflect.getMetadata for legacy setups using emitDecoratorMetadata.
+    const R = Reflect as any;
+    const nativeType = options.__type
+      ?? (typeof R.getMetadata === "function"
+        ? R.getMetadata("design:type", record, propertyName)
+        : undefined);
+
+    if (nativeType === undefined) {
+      throw new Error(
+        `Cannot determine type for property "${propertyName}". ` +
+        `Use the dynamorm transformer plugin in your tsconfig.json, ` +
+        `or enable emitDecoratorMetadata with reflect-metadata.`
+      );
+    }
 
     tableClass.metadata.attributes.push(
       {

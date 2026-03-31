@@ -1,3 +1,3 @@
 #!/bin/bash
 set -e
-./node_modules/.bin/tsc -p ./tsconfig.test.json "$@"
+./node_modules/.bin/tspc -p ./tsconfig.test.json "$@"

@@ -1,5 +1,3 @@
-import "reflect-metadata";
-
 import * as Codec from "./codec";
 import * as Config from "./config";
 import * as Connection from "./connections";

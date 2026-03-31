@@ -1,3 +1,3 @@
 #!/bin/bash
 set -e
-./node_modules/.bin/tsc --noEmit "$@"
+./node_modules/.bin/tspc --noEmit "$@"

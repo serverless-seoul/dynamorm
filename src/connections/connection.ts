@@ -1,8 +1,9 @@
 // Represent "Connection" to DynamoDB
 
-import * as AWS from "aws-sdk";
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
 
 export interface Connection {
-  readonly documentClient: AWS.DynamoDB.DocumentClient;
-  readonly client: AWS.DynamoDB;
+  readonly documentClient: DynamoDBDocumentClient;
+  readonly client: DynamoDBClient;
 }

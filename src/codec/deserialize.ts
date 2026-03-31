@@ -1,11 +1,11 @@
-import { DynamoDB } from "aws-sdk";
+import { unmarshall } from "@aws-sdk/util-dynamodb";
 import * as _ from "lodash";
 
 import { ITable, Table } from "../table";
 
 export function deserialize<T extends Table>(
   tableClass: ITable<T>,
-  dynamoAttributes: DynamoDB.DocumentClient.AttributeMap
+  dynamoAttributes: Record<string, any>
 ): T {
   const record = new tableClass();
 
@@ -25,9 +25,9 @@ export function deserialize<T extends Table>(
 
 export function unmarshal<T extends Table>(
   tableClass: ITable<T>,
-  dynamoAttributes: DynamoDB.AttributeMap
+  dynamoAttributes: Record<string, any>
 ): T {
-  const result = DynamoDB.Converter.unmarshall(dynamoAttributes);
+  const result = unmarshall(dynamoAttributes);
   _.map(result, (val, key) => {
     if (val !== null && typeof(val) === "object" && val.values && val.type) {
       result[key] = val.values;

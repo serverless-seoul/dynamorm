@@ -1,16 +1,18 @@
 {
     "compilerOptions": {
         "module": "commonjs",
-        "target": "es2019",
+        "target": "es2022",
         "noImplicitAny": true,
         "sourceMap": true,
         "declaration": true,
         "rootDir": "src",
         "outDir": "dst",
         "noUnusedLocals": true,
-        "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
-        "strict": true
+        "strict": true,
+        "plugins": [
+            { "transform": "./transformer/index.js" }
+        ]
     },
     "exclude": [
         "**/__test__/"

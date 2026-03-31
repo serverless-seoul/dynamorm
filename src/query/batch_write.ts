@@ -1,24 +1,27 @@
-import { DynamoDB } from "aws-sdk";
+import { DynamoDBDocumentClient, BatchWriteCommand } from "@aws-sdk/lib-dynamodb";
 import * as _ from "lodash";
 
 // this is limit of dynamoDB
 const MAX_ITEMS = 25;
 
 export async function batchWrite(
-  documentClient: DynamoDB.DocumentClient,
+  documentClient: DynamoDBDocumentClient,
   tableName: string,
-  requests: DynamoDB.DocumentClient.WriteRequest[]
+  requests: Array<{
+    PutRequest?: { Item: Record<string, any> };
+    DeleteRequest?: { Key: Record<string, any> };
+  }>
 ) {
   try {
     return await Promise.all(
       _.chunk(requests, MAX_ITEMS)
         .map(async (chunk) => {
           const res =
-            await documentClient.batchWrite({
+            await documentClient.send(new BatchWriteCommand({
               RequestItems: {
                 [tableName]: chunk,
               },
-            }).promise();
+            }));
           return res;
         })
     );

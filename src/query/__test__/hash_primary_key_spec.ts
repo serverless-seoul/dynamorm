@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import * as faker from "faker";
+import { faker } from "@faker-js/faker";
 import * as _ from "lodash";
 import { toJS } from "../../__test__/helper";
 
@@ -16,6 +16,8 @@ import {
 
 import { AttributeExists, Between,  In } from "../expressions/conditions";
 import * as Query from "../index";
+
+import { PutCommand } from "@aws-sdk/lib-dynamodb";
 
 describe("HashPrimaryKey", () => {
   @TableDecorator({ name: "prod-card3" })
@@ -50,13 +52,13 @@ describe("HashPrimaryKey", () => {
 
   describe("#delete", async () => {
     beforeEach(async () => {
-      await Card.metadata.connection.documentClient.put({
+      await Card.metadata.connection.documentClient.send(new PutCommand({
         TableName: Card.metadata.name,
         Item: {
           id: 10,
           title: "abc",
         },
-      }).promise();
+      }));
     });
 
     it("should delete item if exist", async () => {
@@ -96,7 +98,7 @@ describe("HashPrimaryKey", () => {
     it("should return results", async () => {
       async function createCard() {
         const card = new Card();
-        card.id = faker.random.number();
+        card.id = faker.number.int();
         await card.save();
         return card;
       }
@@ -124,7 +126,7 @@ describe("HashPrimaryKey", () => {
     it ("should return results in order", async () => {
       async function createCard() {
         const card = new Card();
-        card.id = faker.random.number();
+        card.id = faker.number.int();
         await card.save();
         return card;
       }

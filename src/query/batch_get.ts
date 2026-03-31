@@ -1,4 +1,4 @@
-import { DynamoDB } from "aws-sdk";
+import { DynamoDBDocumentClient, BatchGetCommand } from "@aws-sdk/lib-dynamodb";
 import * as _ from "lodash";
 
 // this is limit of dynamoDB
@@ -13,22 +13,22 @@ const MAX_ITEMS = 100;
  * return "undefined" for index? or just remove it (default is true)
  */
 export async function __batchGet(
-  documentClient: DynamoDB.DocumentClient,
+  documentClient: DynamoDBDocumentClient,
   tableName: string,
-  keys: DynamoDB.DocumentClient.KeyList
+  keys: Record<string, any>[]
 ) {
   try {
     return await Promise.all(
       _.chunk(keys, MAX_ITEMS)
         .map(async (chunkedKeys) => {
           const res =
-            await documentClient.batchGet({
+            await documentClient.send(new BatchGetCommand({
               RequestItems: {
                 [tableName]: {
                   Keys: chunkedKeys,
                 },
               },
-            }).promise();
+            }));
 
           const records = res.Responses![tableName]!;
 
@@ -53,17 +53,17 @@ export async function __batchGet(
 }
 
 export async function batchGetFull(
-  documentClient: DynamoDB.DocumentClient,
+  documentClient: DynamoDBDocumentClient,
   tableName: string,
-  keys: DynamoDB.DocumentClient.KeyList
+  keys: Record<string, any>[]
 ) {
   return await __batchGet(documentClient, tableName, keys);
 }
 
 export async function batchGetTrim(
-  documentClient: DynamoDB.DocumentClient,
+  documentClient: DynamoDBDocumentClient,
   tableName: string,
-  keys: DynamoDB.DocumentClient.KeyList
+  keys: Record<string, any>[]
 ) {
   return _.compact(await __batchGet(documentClient, tableName, keys));
 }

@@ -1,4 +1,4 @@
-import { DynamoDB } from "aws-sdk";
+import { QueryCommandInput, ScanCommandInput, QueryCommand, ScanCommand } from "@aws-sdk/lib-dynamodb";
 
 import { ITable, Table } from "../table";
 
@@ -22,7 +22,7 @@ export class LocalSecondaryIndex<T extends Table, HashKeyType, RangeKeyType> {
     range?: Query.Conditions<RangeKeyType>,
     rangeOrder?: "ASC" | "DESC",
     limit?: number,
-    exclusiveStartKey?: DynamoDB.DocumentClient.Key,
+    exclusiveStartKey?: Record<string, any>,
     consistent?: boolean,
   }) {
     if (!options.rangeOrder) {
@@ -30,7 +30,7 @@ export class LocalSecondaryIndex<T extends Table, HashKeyType, RangeKeyType> {
     }
     const ScanIndexForward = options.rangeOrder === "ASC";
 
-    const params: DynamoDB.DocumentClient.QueryInput = {
+    const params: QueryCommandInput = {
       TableName: this.tableClass.metadata.name,
       Limit: options.limit,
       IndexName: this.metadata.name,
@@ -54,7 +54,7 @@ export class LocalSecondaryIndex<T extends Table, HashKeyType, RangeKeyType> {
       params.ExpressionAttributeValues = { ...params.ExpressionAttributeValues, ...rangeKeyOptions.expressionAttributeValues };
     }
 
-    const result = await this.tableClass.metadata.connection.documentClient.query(params).promise();
+    const result = await this.tableClass.metadata.connection.documentClient.send(new QueryCommand(params));
 
     return {
       records: (result.Items || []).map((item) => {
@@ -71,9 +71,9 @@ export class LocalSecondaryIndex<T extends Table, HashKeyType, RangeKeyType> {
     limit?: number,
     totalSegments?: number,
     segment?: number,
-    exclusiveStartKey?: DynamoDB.DocumentClient.Key,
+    exclusiveStartKey?: Record<string, any>,
   } = {}) {
-    const params: DynamoDB.DocumentClient.ScanInput = {
+    const params: ScanCommandInput = {
       TableName: this.tableClass.metadata.name,
       Limit: options.limit,
       ExclusiveStartKey: options.exclusiveStartKey,
@@ -82,7 +82,7 @@ export class LocalSecondaryIndex<T extends Table, HashKeyType, RangeKeyType> {
       Segment: options.segment,
     };
 
-    const result = await this.tableClass.metadata.connection.documentClient.scan(params).promise();
+    const result = await this.tableClass.metadata.connection.documentClient.send(new ScanCommand(params));
 
     return {
       records: (result.Items || []).map((item) => {

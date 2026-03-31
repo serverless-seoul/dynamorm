@@ -1,4 +1,4 @@
-import { DynamoDB } from "aws-sdk";
+import { ScanCommandInput, GetCommand, DeleteCommand, UpdateCommand, ScanCommand } from "@aws-sdk/lib-dynamodb";
 
 import * as Codec from "../codec";
 import * as Metadata from "../metadata";
@@ -23,24 +23,24 @@ export class HashPrimaryKey<T extends Table, HashKeyType> {
       condition: Conditions<T> | Array<Conditions<T>>;
     }> = {}
   ) {
-    await this.tableClass.metadata.connection.documentClient.delete({
+    await this.tableClass.metadata.connection.documentClient.send(new DeleteCommand({
       TableName: this.tableClass.metadata.name,
       Key: {
         [this.metadata.hash.name]: hashKey,
       },
       ...buildCondition(this.tableClass.metadata, options.condition),
-    }).promise();
+    }));
   }
 
   public async get(hashKey: HashKeyType, options: { consistent: boolean } = { consistent: false }): Promise<T | null> {
     const dynamoRecord =
-      await this.tableClass.metadata.connection.documentClient.get({
+      await this.tableClass.metadata.connection.documentClient.send(new GetCommand({
         TableName: this.tableClass.metadata.name,
         Key: {
           [this.metadata.hash.name]: hashKey,
         },
         ConsistentRead: options.consistent,
-      }).promise();
+      }));
     if (!dynamoRecord.Item) {
       return null;
     } else {
@@ -52,9 +52,9 @@ export class HashPrimaryKey<T extends Table, HashKeyType> {
     limit?: number,
     totalSegments?: number,
     segment?: number,
-    exclusiveStartKey?: DynamoDB.DocumentClient.Key,
+    exclusiveStartKey?: Record<string, any>,
   } = {}) {
-    const params: DynamoDB.DocumentClient.ScanInput = {
+    const params: ScanCommandInput = {
       TableName: this.tableClass.metadata.name,
       Limit: options.limit,
       ExclusiveStartKey: options.exclusiveStartKey,
@@ -63,7 +63,7 @@ export class HashPrimaryKey<T extends Table, HashKeyType> {
       Segment: options.segment,
     };
 
-    const result = await this.tableClass.metadata.connection.documentClient.scan(params).promise();
+    const result = await this.tableClass.metadata.connection.documentClient.send(new ScanCommand(params));
 
     return {
       records: (result.Items || []).map((item) => {
@@ -140,7 +140,7 @@ export class HashPrimaryKey<T extends Table, HashKeyType> {
     const update = buildUpdate(this.tableClass.metadata, changes);
     const condition = buildCondition(this.tableClass.metadata, options.condition);
 
-    await this.tableClass.metadata.connection.documentClient.update({
+    await this.tableClass.metadata.connection.documentClient.send(new UpdateCommand({
       TableName: this.tableClass.metadata.name,
       Key: {
         [this.metadata.hash.name]: hashKey,
@@ -149,6 +149,6 @@ export class HashPrimaryKey<T extends Table, HashKeyType> {
       ConditionExpression: condition.ConditionExpression,
       ExpressionAttributeNames: { ...update.ExpressionAttributeNames, ...condition.ExpressionAttributeNames },
       ExpressionAttributeValues: { ...update.ExpressionAttributeValues, ...condition.ExpressionAttributeValues },
-    }).promise();
+    }));
   }
 }

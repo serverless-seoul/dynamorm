@@ -1,10 +1,20 @@
-import { DynamoDB } from "aws-sdk";
 import * as Attribute from "../metadata/attribute";
 
 import * as _ from "lodash";
 
+// AWS SDK v3 AttributeValue is a tagged union; we use a plain record for parsing
+interface RawAttributeValue {
+  B?: string | Uint8Array;
+  BOOL?: boolean;
+  L?: RawAttributeValue[];
+  M?: Record<string, RawAttributeValue>;
+  N?: string;
+  S?: string;
+  NULL?: boolean;
+}
+
 // It extracts value with type, such as 'S"
-export function parse(v: DynamoDB.AttributeValue) {
+export function parse(v: RawAttributeValue) {
   if (v.B !== undefined) {
     // Buffer|Uint8Array|Blob|string;
     if (typeof v.B !== "string") {

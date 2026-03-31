@@ -1,14 +1,14 @@
 import { Connection } from "./connection";
 
-import * as AWS from "aws-sdk";
-import { DynamoDB } from "aws-sdk";
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const AmazonDaxClient = require("amazon-dax-client");
 
 export class DAXConnection implements Connection {
-  private __documentClient: AWS.DynamoDB.DocumentClient;
-  private __client: AWS.DynamoDB;
+  private __documentClient: DynamoDBDocumentClient;
+  private __client: DynamoDBClient;
 
   constructor(options: {
     region?: string;
@@ -20,9 +20,7 @@ export class DAXConnection implements Connection {
       endpoints: options.endpoints,
       requestTimeout: options.requestTimeout,
     });
-    this.__documentClient = new DynamoDB.DocumentClient({
-      service: this.__client,
-    });
+    this.__documentClient = DynamoDBDocumentClient.from(this.__client);
   }
 
   public get documentClient() {

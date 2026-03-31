@@ -16,6 +16,8 @@ import {
 
 import * as Query from "../index";
 
+import { PutCommand } from "@aws-sdk/lib-dynamodb";
+
 describe("FullPrimaryKey", () => {
 
   @TableDecorator({ name: "prod-Card2" })
@@ -50,14 +52,14 @@ describe("FullPrimaryKey", () => {
 
   describe("#delete", async () => {
     beforeEach(async () => {
-      await Card.metadata.connection.documentClient.put({
+      await Card.metadata.connection.documentClient.send(new PutCommand({
         TableName: Card.metadata.name,
         Item: {
           id: 10,
           title: "abc",
           count: 100,
         },
-      }).promise();
+      }));
     });
 
     it("should delete item if exist", async () => {
@@ -102,13 +104,13 @@ describe("FullPrimaryKey", () => {
     });
 
     it("should find item", async () => {
-      await Card.metadata.connection.documentClient.put({
+      await Card.metadata.connection.documentClient.send(new PutCommand({
         TableName: Card.metadata.name,
         Item: {
           id: 10,
           title: "abc",
         },
-      }).promise();
+      }));
       const item = await primaryKey.get(10, "abc");
       expect(item).to.be.instanceof(Card);
       expect(item!.id).to.eq(10);
@@ -118,27 +120,27 @@ describe("FullPrimaryKey", () => {
 
   describe("#bacthGet", async () => {
     it("should find items", async () => {
-      await Card.metadata.connection.documentClient.put({
+      await Card.metadata.connection.documentClient.send(new PutCommand({
         TableName: Card.metadata.name,
         Item: {
           id: 10,
           title: "abc",
         },
-      }).promise();
-      await Card.metadata.connection.documentClient.put({
+      }));
+      await Card.metadata.connection.documentClient.send(new PutCommand({
         TableName: Card.metadata.name,
         Item: {
           id: 11,
           title: "abc",
         },
-      }).promise();
-      await Card.metadata.connection.documentClient.put({
+      }));
+      await Card.metadata.connection.documentClient.send(new PutCommand({
         TableName: Card.metadata.name,
         Item: {
           id: 12,
           title: "abc",
         },
-      }).promise();
+      }));
 
       const items1 = (await primaryKey.batchGet([
         [10, "abc"],
@@ -164,27 +166,27 @@ describe("FullPrimaryKey", () => {
 
   describe("#query", () => {
     it("should find items", async () => {
-      await Card.metadata.connection.documentClient.put({
+      await Card.metadata.connection.documentClient.send(new PutCommand({
         TableName: Card.metadata.name,
         Item: {
           id: 10,
           title: "abc",
         },
-      }).promise();
-      await Card.metadata.connection.documentClient.put({
+      }));
+      await Card.metadata.connection.documentClient.send(new PutCommand({
         TableName: Card.metadata.name,
         Item: {
           id: 10,
           title: "abd",
         },
-      }).promise();
-      await Card.metadata.connection.documentClient.put({
+      }));
+      await Card.metadata.connection.documentClient.send(new PutCommand({
         TableName: Card.metadata.name,
         Item: {
           id: 10,
           title: "aba",
         },
-      }).promise();
+      }));
 
       let res = await primaryKey.query({
         hash: 10,
@@ -209,27 +211,27 @@ describe("FullPrimaryKey", () => {
 
   describe("#scan", () => {
     it("should find items", async () => {
-      await Card.metadata.connection.documentClient.put({
+      await Card.metadata.connection.documentClient.send(new PutCommand({
         TableName: Card.metadata.name,
         Item: {
           id: 10,
           title: "abc",
         },
-      }).promise();
-      await Card.metadata.connection.documentClient.put({
+      }));
+      await Card.metadata.connection.documentClient.send(new PutCommand({
         TableName: Card.metadata.name,
         Item: {
           id: 10,
           title: "abd",
         },
-      }).promise();
-      await Card.metadata.connection.documentClient.put({
+      }));
+      await Card.metadata.connection.documentClient.send(new PutCommand({
         TableName: Card.metadata.name,
         Item: {
           id: 10,
           title: "aba",
         },
-      }).promise();
+      }));
 
       const res = await primaryKey.scan({
         limit: 2,
